@@ -1,13 +1,15 @@
 package com.duoc.veterinaria
 
-import com.duoc.veterinaria.screens.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.duoc.veterinaria.model.RegistroAtencion
-import com.duoc.veterinaria.service.VeterinariaService
+import com.duoc.veterinaria.data.model.RegistroAtencion
+import com.duoc.veterinaria.data.service.VeterinariaService
+import com.duoc.veterinaria.ui.RegistroScreen
+import com.duoc.veterinaria.ui.ResumenScreen
+import com.duoc.veterinaria.ui.WelcomeScreen
 
 @Composable
 fun VeterinariaApp(onExit: () -> Unit) { // 1. Recibimos el onExit

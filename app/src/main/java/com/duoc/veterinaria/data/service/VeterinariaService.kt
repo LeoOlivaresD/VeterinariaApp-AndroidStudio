@@ -1,7 +1,7 @@
-package com.duoc.veterinaria.service
+package com.duoc.veterinaria.data.service
 
 import com.duoc.veterinaria.annotations.Promocionable
-import com.duoc.veterinaria.model.Medicamento
+import com.duoc.veterinaria.data.model.Medicamento
 import com.duoc.veterinaria.utils.Validaciones
 import java.util.Calendar
 

@@ -1,4 +1,4 @@
-package com.duoc.veterinaria.screens
+package com.duoc.veterinaria.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,13 +10,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.duoc.veterinaria.model.*
-import com.duoc.veterinaria.service.VeterinariaService
+import com.duoc.veterinaria.data.service.VeterinariaService
 import com.duoc.veterinaria.utils.Validaciones
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import com.duoc.veterinaria.data.model.Cliente
+import com.duoc.veterinaria.data.model.Consulta
+import com.duoc.veterinaria.data.model.Mascota
+import com.duoc.veterinaria.data.model.Medicamento
+import com.duoc.veterinaria.data.model.RegistroAtencion
 
 @Composable
 fun WelcomeScreen(
@@ -36,7 +41,7 @@ fun WelcomeScreen(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.headlineMedium,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(32.dp))

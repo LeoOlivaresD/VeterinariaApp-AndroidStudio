@@ -1,4 +1,4 @@
-package com.duoc.veterinaria.model
+package com.duoc.veterinaria.data.model
 
 data class Pedido(
     val idPedido: Int,
