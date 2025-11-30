@@ -18,7 +18,8 @@ fun VeterinariaApp(onExit: () -> Unit) { // 1. Recibimos el onExit
     when (currentScreen) {
         "welcome" -> WelcomeScreen(
             onStartClick = { currentScreen = "registro" },
-            onVerRegistrosClick = { currentScreen = "resumen" }
+            onVerRegistrosClick = { currentScreen = "resumen" },
+            onFinalizarApp = onExit // 3. Conectamos el botón al cierre de la app
         )
         "registro" -> RegistroScreen(
             service = service,
@@ -31,8 +32,7 @@ fun VeterinariaApp(onExit: () -> Unit) { // 1. Recibimos el onExit
         "resumen" -> ResumenScreen(
             registros = registros,
             onNuevaAtencion = { currentScreen = "registro" },
-            onVolverInicio = { currentScreen = "welcome" },
-            onFinalizarApp = onExit // 2. Se lo pasamos a la pantalla final
+            onVolverInicio = { currentScreen = "welcome" }
         )
     }
 }

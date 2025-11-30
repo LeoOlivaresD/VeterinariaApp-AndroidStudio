@@ -14,10 +14,12 @@ import com.duoc.veterinaria.model.*
 import com.duoc.veterinaria.service.VeterinariaService
 import com.duoc.veterinaria.utils.Validaciones
 
+//PANTALLA DE INICIO APP
 @Composable
 fun WelcomeScreen(
     onStartClick: () -> Unit,
-    onVerRegistrosClick: () -> Unit // 1. Nuevo parámetro para la navegación
+    onVerRegistrosClick: () -> Unit,
+    onFinalizarApp: () -> Unit // 1. Recibimos la función de cerrar
 ) {
     Column(
         modifier = Modifier
@@ -36,26 +38,33 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Botón principal
+        // Botón Registrar
         Button(
             onClick = onStartClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
+            modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
             Text(text = "Registrar Nueva Atención", fontSize = 18.sp)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2. Nuevo botón para ver el historial
+        // Botón Ver Registros
         OutlinedButton(
             onClick = onVerRegistrosClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
+            modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
             Text(text = "Ver Consultas Registradas", fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 2. Botón Cerrar Aplicación (Rojo)
+        Button(
+            onClick = onFinalizarApp,
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        ) {
+            Text(text = "Cerrar Aplicación", fontSize = 18.sp)
         }
     }
 }
@@ -436,8 +445,7 @@ fun SeleccionMedicamentoForm(
 fun ResumenScreen(
     registros: List<RegistroAtencion>,
     onNuevaAtencion: () -> Unit,
-    onVolverInicio: () -> Unit,
-    onFinalizarApp: () -> Unit // Recibimos la acción de cerrar
+    onVolverInicio: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -475,20 +483,9 @@ fun ResumenScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Botón para volver al inicio (sin borrar datos)
+        // Botón para volver al inicio
         OutlinedButton(onClick = onVolverInicio, modifier = Modifier.fillMaxWidth()) {
             Text("Volver al Inicio")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // ¡NUEVO BOTÓN PARA CERRAR LA APP!
-        Button(
-            onClick = onFinalizarApp,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) // Color rojo para indicar salida
-        ) {
-            Text("Cerrar Aplicación")
         }
     }
 }
