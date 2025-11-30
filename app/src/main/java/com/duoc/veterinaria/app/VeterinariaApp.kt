@@ -22,7 +22,15 @@ fun VeterinariaApp(onExit: () -> Unit) { // 1. Recibimos el onExit
         "welcome" -> WelcomeScreen(
             onStartClick = { currentScreen = "registro" },
             onVerRegistrosClick = { currentScreen = "resumen" },
-            onFinalizarApp = onExit // 3. Conectamos el botón al cierre de la app
+            onFinalizarApp = onExit,
+
+            // --- CÁLCULOS DINÁMICOS PARA LA SEMANA 5 ---
+            // Contamos mascotas únicas por nombre
+            totalMascotas = registros.map { it.mascota.nombre }.distinct().size,
+            // Total de registros en la lista
+            totalConsultas = registros.size,
+            // Nombre del último dueño (o "N/A" si está vacío)
+            ultimoDueno = registros.lastOrNull()?.dueno?.nombre ?: "N/A"
         )
         "registro" -> RegistroScreen(
             service = service,
