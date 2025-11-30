@@ -15,7 +15,10 @@ import com.duoc.veterinaria.service.VeterinariaService
 import com.duoc.veterinaria.utils.Validaciones
 
 @Composable
-fun WelcomeScreen(onStartClick: () -> Unit) {
+fun WelcomeScreen(
+    onStartClick: () -> Unit,
+    onVerRegistrosClick: () -> Unit // 1. Nuevo parámetro para la navegación
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -27,11 +30,13 @@ fun WelcomeScreen(onStartClick: () -> Unit) {
             text = "Bienvenidos al servicio de atención veterinaria",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Botón principal
         Button(
             onClick = onStartClick,
             modifier = Modifier
@@ -39,6 +44,18 @@ fun WelcomeScreen(onStartClick: () -> Unit) {
                 .height(56.dp)
         ) {
             Text(text = "Registrar Nueva Atención", fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 2. Nuevo botón para ver el historial
+        OutlinedButton(
+            onClick = onVerRegistrosClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text(text = "Ver Consultas Registradas", fontSize = 18.sp)
         }
     }
 }
