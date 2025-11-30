@@ -27,7 +27,11 @@ import com.duoc.veterinaria.data.model.RegistroAtencion
 fun WelcomeScreen(
     onStartClick: () -> Unit,
     onVerRegistrosClick: () -> Unit,
-    onFinalizarApp: () -> Unit
+    onFinalizarApp: () -> Unit,
+    // Nuevos parámetros para del resumen pedidos en Semana 5
+    totalMascotas: Int,
+    totalConsultas: Int,
+    ultimoDueno: String
 ) {
     Column(
         modifier = Modifier
@@ -41,8 +45,25 @@ fun WelcomeScreen(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // --- TARJETA DE RESUMEN ---
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("📊 Resumen del Sistema", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("🐾 Mascotas atendidas: $totalMascotas")
+                Text("📝 Consultas totales: $totalConsultas")
+                Text("👤 Último dueño: $ultimoDueno")
+            }
+        }
+        // ----------------------------------------------------
 
         Spacer(modifier = Modifier.height(32.dp))
 
