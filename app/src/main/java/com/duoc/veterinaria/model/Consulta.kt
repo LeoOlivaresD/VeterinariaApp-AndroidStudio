@@ -1,9 +1,10 @@
 package com.duoc.veterinaria.model
 
 data class Consulta(
-    val idConsulta: Int,
-    var descripcion: String,
-    var costoConsulta: Double,
-    var estado: String
+    val id: Int,
+    val descripcion: String,
+    val costoConsulta: Double,
+    val estado: String,
+    val medicamentos: List<Medicamento> = emptyList()
 )
 
