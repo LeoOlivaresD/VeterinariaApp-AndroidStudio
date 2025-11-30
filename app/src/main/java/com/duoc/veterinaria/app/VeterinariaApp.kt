@@ -1,4 +1,4 @@
-package com.duoc.veterinaria
+package com.duoc.veterinaria.app
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

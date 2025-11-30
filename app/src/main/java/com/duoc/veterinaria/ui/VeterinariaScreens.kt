@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import com.duoc.veterinaria.data.model.Cliente
 import com.duoc.veterinaria.data.model.Consulta
 import com.duoc.veterinaria.data.model.Mascota
