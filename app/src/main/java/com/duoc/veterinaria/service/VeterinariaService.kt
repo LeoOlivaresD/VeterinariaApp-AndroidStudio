@@ -1,12 +1,12 @@
 package com.duoc.veterinaria.service
 
+import com.duoc.veterinaria.annotations.Promocionable
 import com.duoc.veterinaria.model.Medicamento
 import com.duoc.veterinaria.utils.Validaciones
 import java.util.Calendar
 
 class VeterinariaService {
 
-    // Proveedor de Tipos de Atención y sus costos base
     fun obtenerTiposAtencion(): List<Pair<String, Double>> {
         return listOf(
             "Consulta general" to 15000.0,
@@ -16,7 +16,6 @@ class VeterinariaService {
         )
     }
 
-    // Lista específica de Vacunas (para tipo "Vacunación")
     fun obtenerVacunas(): List<Medicamento> {
         return listOf(
             Medicamento("Vacuna Antirabica", 8000.0, 30),
@@ -25,7 +24,6 @@ class VeterinariaService {
         )
     }
 
-    // Lista específica de Medicamentos (para tipo "Urgencia")
     fun obtenerMedicamentosGenerales(): List<Medicamento> {
         return listOf(
             Medicamento("Mulcatel", 1000.0, 10),
@@ -34,23 +32,38 @@ class VeterinariaService {
         )
     }
 
-    // Lógica de precio con descuento (Promo 10-20 del mes O anotación @Promocionable)
+    // 1. Nuevo: Obtener nombre del veterinario de turno
+    fun obtenerNombreVeterinario(): String {
+        return "Dra. López" // Dato simulado
+    }
+
     fun obtenerPrecioFinalMedicamento(med: Medicamento): Double {
         val diaHoy = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-
-        // Verifica si estamos en días de promo (10 al 20)
         val esPeriodoPromo = Validaciones.estaEnPeriodoPromocional(diaHoy)
 
-        // Si es periodo promo, o si el medicamento tiene la anotación (la lógica interna de la clase lo revisa)
-        // En tu lógica original, si está en periodo promo se aplica el descuento.
-        // Además, calcularPrecioConDescuento() ya verifica la anotación.
-
         return if (esPeriodoPromo) {
-            // Forzamos el cálculo con descuento si es el periodo correcto
-            med.precio * 0.8 // 20% descuento manual o usar la lógica de la clase si prefieres
+            med.precio * 0.8
         } else {
-            // Si no es fecha promo, confiamos en la anotación del modelo
             med.calcularPrecioConDescuento()
         }
+    }
+
+    // 2. Generar texto explicativo del descuento
+    fun obtenerDetalleDescuento(med: Medicamento): String {
+        val diaHoy = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+        // Prioridad 1: Fecha Promocional
+        if (Validaciones.estaEnPeriodoPromocional(diaHoy)) {
+            return "20% dcto. (Semana Promocional)"
+        }
+
+        // Anotación del producto
+        // Usamos reflection para ver si tiene la anotación @Promocionable
+        val anotacion = med::class.annotations.find { it is Promocionable } as? Promocionable
+        if (anotacion != null) {
+            return "${(anotacion.descuento * 100).toInt()}% dcto. (${anotacion.descripcion})"
+        }
+
+        return "" // Sin descuento
     }
 }

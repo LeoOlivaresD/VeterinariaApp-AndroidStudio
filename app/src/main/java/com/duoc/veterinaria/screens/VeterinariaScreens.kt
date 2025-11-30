@@ -8,19 +8,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.duoc.veterinaria.model.*
 import com.duoc.veterinaria.service.VeterinariaService
 import com.duoc.veterinaria.utils.Validaciones
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import androidx.compose.ui.graphics.Color
 
-//PANTALLA DE INICIO APP
 @Composable
 fun WelcomeScreen(
     onStartClick: () -> Unit,
     onVerRegistrosClick: () -> Unit,
-    onFinalizarApp: () -> Unit // 1. Recibimos la función de cerrar
+    onFinalizarApp: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -34,12 +36,11 @@ fun WelcomeScreen(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Botón Registrar
         Button(
             onClick = onStartClick,
             modifier = Modifier.fillMaxWidth().height(56.dp)
@@ -49,7 +50,6 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón Ver Registros
         OutlinedButton(
             onClick = onVerRegistrosClick,
             modifier = Modifier.fillMaxWidth().height(56.dp)
@@ -59,7 +59,6 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2. Botón Cerrar Aplicación (Rojo)
         Button(
             onClick = onFinalizarApp,
             modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -81,62 +80,54 @@ fun RegistroScreen(
     var mascota by remember { mutableStateOf<Mascota?>(null) }
     var consulta by remember { mutableStateOf<Consulta?>(null) }
 
-    // Estado para la lista y el título dinámico
     var listaMedicamentosAMostrar by remember { mutableStateOf<List<Medicamento>>(emptyList()) }
     var tituloPantallaMedicamentos by remember { mutableStateOf("Seleccionar Producto") }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())
     ) {
         Text(
             text = "Registro de Atención - Paso $step de ${if(step == 4) 4 else 3}",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp)
         )
 
         when (step) {
             1 -> RegistroDuenoForm(
-                onComplete = { cliente ->
-                    dueno = cliente
-                    step = 2
-                },
+                onComplete = { dueno = it; step = 2 },
                 onBack = onBackClick
             )
             2 -> RegistroMascotaForm(
-                onComplete = { pet ->
-                    mascota = pet
-                    step = 3
-                },
+                onComplete = { mascota = it; step = 3 },
                 onBack = { step = 1 }
             )
             3 -> RegistroConsultaForm(
                 service = service,
                 onComplete = { cons ->
                     consulta = cons
-
-                    // LÓGICA CONDICIONAL: Configuramos lista Y título
                     when (cons.descripcion) {
                         "Urgencia" -> {
                             listaMedicamentosAMostrar = service.obtenerMedicamentosGenerales()
-                            tituloPantallaMedicamentos = "Seleccionar Medicamento" // Título para urgencia
+                            tituloPantallaMedicamentos = "Seleccionar Medicamento"
                             step = 4
                         }
                         "Vacunación" -> {
                             listaMedicamentosAMostrar = service.obtenerVacunas()
-                            tituloPantallaMedicamentos = "Seleccionar Vacuna" // Título para vacunas
+                            tituloPantallaMedicamentos = "Seleccionar Vacuna"
                             step = 4
                         }
                         else -> {
-                            val medNA = Medicamento("N/A", 0.0, 0)
+                            // Caso N/A: Guardamos fecha y vet, sin medicamento
+                            val fechaHoy = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+                            val vet = service.obtenerNombreVeterinario()
                             val registro = RegistroAtencion(
                                 dueno = dueno!!,
                                 mascota = mascota!!,
                                 consulta = cons,
-                                medicamento = medNA
+                                medicamento = Medicamento("N/A", 0.0, 0),
+                                veterinario = vet,
+                                fecha = fechaHoy,
+                                precioFinalMedicamento = 0.0,
+                                detalleDescuento = ""
                             )
                             onRegistroComplete(registro)
                         }
@@ -147,13 +138,23 @@ fun RegistroScreen(
             4 -> SeleccionMedicamentoForm(
                 service = service,
                 listaMedicamentos = listaMedicamentosAMostrar,
-                titulo = tituloPantallaMedicamentos, // Pasamos el título dinámico aquí
+                titulo = tituloPantallaMedicamentos,
                 onComplete = { med ->
+                    // Caso con Medicamento: Calculamos todo
+                    val fechaHoy = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+                    val vet = service.obtenerNombreVeterinario()
+                    val precioFinal = service.obtenerPrecioFinalMedicamento(med)
+                    val infoDescuento = service.obtenerDetalleDescuento(med)
+
                     val registro = RegistroAtencion(
                         dueno = dueno!!,
                         mascota = mascota!!,
                         consulta = consulta!!,
-                        medicamento = med
+                        medicamento = med,
+                        veterinario = vet,
+                        fecha = fechaHoy,
+                        precioFinalMedicamento = precioFinal,
+                        detalleDescuento = infoDescuento
                     )
                     onRegistroComplete(registro)
                 },
@@ -384,29 +385,24 @@ fun RegistroConsultaForm(
 fun SeleccionMedicamentoForm(
     service: VeterinariaService,
     listaMedicamentos: List<Medicamento>,
-    titulo: String, // Recibimos el título como parámetro
+    titulo: String,
     onComplete: (Medicamento) -> Unit,
     onBack: () -> Unit
 ) {
     var medicamentoSeleccionado by remember { mutableStateOf<Medicamento?>(null) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        // Usamos la variable 'titulo' en lugar del texto fijo
         Text(titulo, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(16.dp))
 
         listaMedicamentos.forEach { med ->
             val precioFinal = service.obtenerPrecioFinalMedicamento(med)
+            val tieneDescuento = precioFinal < med.precio
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (medicamentoSeleccionado == med)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.surface
+                    containerColor = if (medicamentoSeleccionado == med) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
                 )
             ) {
                 Row(
@@ -422,6 +418,10 @@ fun SeleccionMedicamentoForm(
                         Text(med.nombre, fontWeight = FontWeight.Medium)
                         Text("Precio lista: $${med.precio}", fontSize = 12.sp)
                         Text("Precio final: $$precioFinal", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+
+                        if (tieneDescuento) {
+                            Text(service.obtenerDetalleDescuento(med), fontSize = 10.sp, color = Color.Red)
+                        }
                     }
                 }
             }
@@ -441,7 +441,6 @@ fun SeleccionMedicamentoForm(
     }
 }
 
-
 @Composable
 fun ResumenScreen(
     registros: List<RegistroAtencion>,
@@ -449,10 +448,7 @@ fun ResumenScreen(
     onVolverInicio: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())
     ) {
         Text("Resumen de Atenciones", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
@@ -466,25 +462,41 @@ fun ResumenScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Atención ${index + 1}", fontWeight = FontWeight.Bold)
-                    Text("Dueño: ${registro.dueno.nombre}, ${registro.dueno.email}")
+                    Text("Atención ${index + 1}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    // Datos generales
+                    Text("Fecha: ${registro.fecha}", fontSize = 12.sp, color = Color.Gray)
+                    Text("Veterinario: ${registro.veterinario}", fontSize = 14.sp)
+                    Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                    Text("Dueño: ${registro.dueno.nombre}")
                     Text("Mascota: ${registro.mascota.nombre} (${registro.mascota.especie})")
-                    Text("Consulta: ${registro.consulta.descripcion} - $${registro.consulta.costoConsulta}")
-                    Text("Medicamento: ${registro.medicamento.nombre}")
+                    Text("Consulta: ${registro.consulta.descripcion}")
+
+                    // Sección de Medicamentos con Descuento
+                    if (registro.medicamento.nombre != "N/A") {
+                        Divider(modifier = Modifier.padding(vertical = 4.dp))
+                        Text("Medicamento/Vacuna: ${registro.medicamento.nombre}", fontWeight = FontWeight.SemiBold)
+                        Text("Precio final: $${registro.precioFinalMedicamento}")
+
+                        // Aquí mostramos el detalle del descuento si existe
+                        if (registro.detalleDescuento.isNotEmpty()) {
+                            Text(
+                                text = registro.detalleDescuento,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        // Botón para nueva atención
         Button(onClick = onNuevaAtencion, modifier = Modifier.fillMaxWidth()) {
             Text("Registrar otra atención")
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Botón para volver al inicio
         OutlinedButton(onClick = onVolverInicio, modifier = Modifier.fillMaxWidth()) {
             Text("Volver al Inicio")
         }
