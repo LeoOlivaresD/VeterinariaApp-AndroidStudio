@@ -18,8 +18,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Ahora MainActivity solo llama a la App principal
-                    VeterinariaApp()
+                    // Pasamos la función finish() para cerrar la actividad
+                    VeterinariaApp(onExit = { finish() })
                 }
             }
         }

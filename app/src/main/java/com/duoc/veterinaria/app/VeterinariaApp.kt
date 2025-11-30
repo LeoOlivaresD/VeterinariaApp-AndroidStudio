@@ -9,19 +9,16 @@ import com.duoc.veterinaria.model.RegistroAtencion
 import com.duoc.veterinaria.service.VeterinariaService
 
 @Composable
-fun VeterinariaApp() {
+fun VeterinariaApp(onExit: () -> Unit) { // 1. Recibimos el onExit
     var currentScreen by remember { mutableStateOf("welcome") }
-
-    // Lista de registros guardada en memoria mientras la app está viva
     var registros by remember { mutableStateOf(listOf<RegistroAtencion>()) }
 
-    // Instanciamos el servicio una sola vez
     val service = remember { VeterinariaService() }
 
     when (currentScreen) {
         "welcome" -> WelcomeScreen(
             onStartClick = { currentScreen = "registro" },
-            onVerRegistrosClick = { currentScreen = "resumen" } // 3. ¡Conectamos el nuevo botón!
+            onVerRegistrosClick = { currentScreen = "resumen" }
         )
         "registro" -> RegistroScreen(
             service = service,
@@ -34,7 +31,8 @@ fun VeterinariaApp() {
         "resumen" -> ResumenScreen(
             registros = registros,
             onNuevaAtencion = { currentScreen = "registro" },
-            onVolverInicio = { currentScreen = "welcome" }
+            onVolverInicio = { currentScreen = "welcome" },
+            onFinalizarApp = onExit // 2. Se lo pasamos a la pantalla final
         )
     }
 }

@@ -431,11 +431,13 @@ fun SeleccionMedicamentoForm(
     }
 }
 
+
 @Composable
 fun ResumenScreen(
     registros: List<RegistroAtencion>,
     onNuevaAtencion: () -> Unit,
-    onVolverInicio: () -> Unit
+    onVolverInicio: () -> Unit,
+    onFinalizarApp: () -> Unit // Recibimos la acción de cerrar
 ) {
     Column(
         modifier = Modifier
@@ -456,19 +458,37 @@ fun ResumenScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Atención ${index + 1}", fontWeight = FontWeight.Bold)
-                    Text("Dueño: ${registro.dueno.nombre}, ${registro.dueno.email}, ${registro.dueno.telefono}")
-                    Text("Mascota: ${registro.mascota.nombre} (${registro.mascota.especie}), ${registro.mascota.edad} años")
-                    Text("Consulta: ${registro.consulta.descripcion}, costo: $${registro.consulta.costoConsulta}")
-                    Text("Medicamentos: ${registro.medicamento.nombre} - $${registro.medicamento.precio}")
+                    Text("Dueño: ${registro.dueno.nombre}, ${registro.dueno.email}")
+                    Text("Mascota: ${registro.mascota.nombre} (${registro.mascota.especie})")
+                    Text("Consulta: ${registro.consulta.descripcion} - $${registro.consulta.costoConsulta}")
+                    Text("Medicamento: ${registro.medicamento.nombre}")
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(24.dp))
+
+        // Botón para nueva atención
         Button(onClick = onNuevaAtencion, modifier = Modifier.fillMaxWidth()) {
             Text("Registrar otra atención")
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Botón para volver al inicio (sin borrar datos)
         OutlinedButton(onClick = onVolverInicio, modifier = Modifier.fillMaxWidth()) {
-            Text("Salir / Inicio")
+            Text("Volver al Inicio")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // ¡NUEVO BOTÓN PARA CERRAR LA APP!
+        Button(
+            onClick = onFinalizarApp,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) // Color rojo para indicar salida
+        ) {
+            Text("Cerrar Aplicación")
         }
     }
 }
