@@ -1,4 +1,4 @@
-package com.duoc.veterinaria.model
+package com.duoc.veterinaria.annotations
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

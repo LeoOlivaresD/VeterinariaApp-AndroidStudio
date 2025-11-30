@@ -1,5 +1,7 @@
 package com.duoc.veterinaria.model
 
+import com.duoc.veterinaria.annotations.Promocionable
+
 @Promocionable(descuento = 0.20, descripcion = "Medicamento con 20% de descuento")
 data class Medicamento(
     val nombre: String,

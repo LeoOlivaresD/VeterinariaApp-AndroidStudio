@@ -1,4 +1,4 @@
-package com.duoc.veterinaria.model
+package com.duoc.veterinaria.utils
 
 object Validaciones {
 
