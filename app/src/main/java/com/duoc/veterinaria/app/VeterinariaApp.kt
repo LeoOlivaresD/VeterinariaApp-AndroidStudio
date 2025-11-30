@@ -6,6 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.duoc.veterinaria.model.RegistroAtencion
+import com.duoc.veterinaria.screens.RegistroScreen
+import com.duoc.veterinaria.screens.ResumenScreen
+import com.duoc.veterinaria.screens.WelcomeScreen
 import com.duoc.veterinaria.service.VeterinariaService
 
 @Composable

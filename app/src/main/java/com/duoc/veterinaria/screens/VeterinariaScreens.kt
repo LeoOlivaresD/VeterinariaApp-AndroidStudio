@@ -1,4 +1,4 @@
-package com.duoc.veterinaria
+package com.duoc.veterinaria.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.duoc.veterinaria.model.*
@@ -33,7 +34,7 @@ fun WelcomeScreen(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.headlineMedium,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(32.dp))
