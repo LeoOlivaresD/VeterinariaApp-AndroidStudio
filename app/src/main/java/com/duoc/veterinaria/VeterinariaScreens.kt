@@ -53,7 +53,10 @@ fun RegistroScreen(
     var dueno by remember { mutableStateOf<Cliente?>(null) }
     var mascota by remember { mutableStateOf<Mascota?>(null) }
     var consulta by remember { mutableStateOf<Consulta?>(null) }
-    var medicamento by remember { mutableStateOf<Medicamento?>(null) }
+
+    // Estado para la lista y el título dinámico
+    var listaMedicamentosAMostrar by remember { mutableStateOf<List<Medicamento>>(emptyList()) }
+    var tituloPantallaMedicamentos by remember { mutableStateOf("Seleccionar Producto") }
 
     Column(
         modifier = Modifier
@@ -62,7 +65,7 @@ fun RegistroScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = "Registro de Atención - Paso $step de 4",
+            text = "Registro de Atención - Paso $step de ${if(step == 4) 4 else 3}",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -87,14 +90,38 @@ fun RegistroScreen(
                 service = service,
                 onComplete = { cons ->
                     consulta = cons
-                    step = 4
+
+                    // LÓGICA CONDICIONAL: Configuramos lista Y título
+                    when (cons.descripcion) {
+                        "Urgencia" -> {
+                            listaMedicamentosAMostrar = service.obtenerMedicamentosGenerales()
+                            tituloPantallaMedicamentos = "Seleccionar Medicamento" // Título para urgencia
+                            step = 4
+                        }
+                        "Vacunación" -> {
+                            listaMedicamentosAMostrar = service.obtenerVacunas()
+                            tituloPantallaMedicamentos = "Seleccionar Vacuna" // Título para vacunas
+                            step = 4
+                        }
+                        else -> {
+                            val medNA = Medicamento("N/A", 0.0, 0)
+                            val registro = RegistroAtencion(
+                                dueno = dueno!!,
+                                mascota = mascota!!,
+                                consulta = cons,
+                                medicamento = medNA
+                            )
+                            onRegistroComplete(registro)
+                        }
+                    }
                 },
                 onBack = { step = 2 }
             )
             4 -> SeleccionMedicamentoForm(
                 service = service,
+                listaMedicamentos = listaMedicamentosAMostrar,
+                titulo = tituloPantallaMedicamentos, // Pasamos el título dinámico aquí
                 onComplete = { med ->
-                    medicamento = med
                     val registro = RegistroAtencion(
                         dueno = dueno!!,
                         mascota = mascota!!,
@@ -274,7 +301,6 @@ fun RegistroConsultaForm(
     onBack: () -> Unit
 ) {
     var tipoSeleccionado by remember { mutableStateOf("") }
-    // Usamos el Service para obtener la lista
     val tipos = remember { service.obtenerTiposAtencion() }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -330,18 +356,19 @@ fun RegistroConsultaForm(
 @Composable
 fun SeleccionMedicamentoForm(
     service: VeterinariaService,
+    listaMedicamentos: List<Medicamento>,
+    titulo: String, // Recibimos el título como parámetro
     onComplete: (Medicamento) -> Unit,
     onBack: () -> Unit
 ) {
     var medicamentoSeleccionado by remember { mutableStateOf<Medicamento?>(null) }
-    // Usamos el Service
-    val medicamentos = remember { service.obtenerMedicamentosDisponibles() }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text("Seleccionar Medicamento", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+        // Usamos la variable 'titulo' en lugar del texto fijo
+        Text(titulo, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(16.dp))
 
-        medicamentos.forEach { med ->
+        listaMedicamentos.forEach { med ->
             val precioFinal = service.obtenerPrecioFinalMedicamento(med)
 
             Card(
@@ -393,7 +420,6 @@ fun ResumenScreen(
     onNuevaAtencion: () -> Unit,
     onVolverInicio: () -> Unit
 ) {
-    // La pantalla de resumen queda igual que en tu código original
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -401,6 +427,11 @@ fun ResumenScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Text("Resumen de Atenciones", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+
+        if (registros.isEmpty()) {
+            Text("No hay atenciones registradas.", modifier = Modifier.padding(vertical = 16.dp))
+        }
+
         registros.forEachIndexed { index, registro ->
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -408,19 +439,19 @@ fun ResumenScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Atención ${index + 1}", fontWeight = FontWeight.Bold)
-                    Text("Dueño: ${registro.dueno.nombre}")
-                    Text("Mascota: ${registro.mascota.nombre} (${registro.mascota.especie})")
-                    Text("Consulta: ${registro.consulta.descripcion} - $${registro.consulta.costoConsulta}")
-                    Text("Medicamento: ${registro.medicamento.nombre}")
+                    Text("Dueño: ${registro.dueno.nombre}, ${registro.dueno.email}, ${registro.dueno.telefono}")
+                    Text("Mascota: ${registro.mascota.nombre} (${registro.mascota.especie}), ${registro.mascota.edad} años")
+                    Text("Consulta: ${registro.consulta.descripcion}, costo: $${registro.consulta.costoConsulta}")
+                    Text("Medicamentos: ${registro.medicamento.nombre} - $${registro.medicamento.precio}")
                 }
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onNuevaAtencion, modifier = Modifier.fillMaxWidth()) {
-            Text("Nueva Atención")
+            Text("Registrar otra atención")
         }
         OutlinedButton(onClick = onVolverInicio, modifier = Modifier.fillMaxWidth()) {
-            Text("Volver al Inicio")
+            Text("Salir / Inicio")
         }
     }
 }

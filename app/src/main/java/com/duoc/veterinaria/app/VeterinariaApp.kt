@@ -7,8 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.duoc.veterinaria.model.RegistroAtencion
 import com.duoc.veterinaria.service.VeterinariaService
-
-// Fíjate que NO hay una "class VeterinariaApp", la función está directa
 @Composable
 fun VeterinariaApp() {
     var currentScreen by remember { mutableStateOf("welcome") }

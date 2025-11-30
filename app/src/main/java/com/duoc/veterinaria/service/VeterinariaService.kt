@@ -16,25 +16,41 @@ class VeterinariaService {
         )
     }
 
-    // Proveedor de Medicamentos disponibles
-    fun obtenerMedicamentosDisponibles(): List<Medicamento> {
+    // Lista específica de Vacunas (para tipo "Vacunación")
+    fun obtenerVacunas(): List<Medicamento> {
         return listOf(
-            Medicamento("Vacuna Rabia", 8000.0, 30),
-            Medicamento("Antiparasitario", 15000.0, 50),
-            Medicamento("Antiinflamatorio", 9000.0, 20)
+            Medicamento("Vacuna Antirabica", 8000.0, 30),
+            Medicamento("Antiparasitaria", 15000.0, 50),
+            Medicamento("Triple Felina", 9000.0, 20)
         )
     }
 
-    // Lógica para determinar el precio final (migrada de tu lógica original)
+    // Lista específica de Medicamentos (para tipo "Urgencia")
+    fun obtenerMedicamentosGenerales(): List<Medicamento> {
+        return listOf(
+            Medicamento("Mulcatel", 1000.0, 10),
+            Medicamento("Meloxicam", 12000.0, 13),
+            Medicamento("Amoxicilina-clavulánico", 3000.0, 22)
+        )
+    }
+
+    // Lógica de precio con descuento (Promo 10-20 del mes O anotación @Promocionable)
     fun obtenerPrecioFinalMedicamento(med: Medicamento): Double {
         val diaHoy = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
-        // Verificamos si aplica descuento por fecha O por anotación (según tu lógica original)
+        // Verifica si estamos en días de promo (10 al 20)
         val esPeriodoPromo = Validaciones.estaEnPeriodoPromocional(diaHoy)
 
-        // En tu modelo, calcularPrecioConDescuento() ya verifica la anotación internamente.
-        // Aquí podrías agregar lógica extra si el periodo promocional afectara a items sin anotación.
-        // Por ahora, devolvemos el precio calculado por el modelo.
-        return med.calcularPrecioConDescuento()
+        // Si es periodo promo, o si el medicamento tiene la anotación (la lógica interna de la clase lo revisa)
+        // En tu lógica original, si está en periodo promo se aplica el descuento.
+        // Además, calcularPrecioConDescuento() ya verifica la anotación.
+
+        return if (esPeriodoPromo) {
+            // Forzamos el cálculo con descuento si es el periodo correcto
+            med.precio * 0.8 // 20% descuento manual o usar la lógica de la clase si prefieres
+        } else {
+            // Si no es fecha promo, confiamos en la anotación del modelo
+            med.calcularPrecioConDescuento()
+        }
     }
 }
