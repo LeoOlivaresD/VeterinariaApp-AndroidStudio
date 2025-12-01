@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.layout.ContentScale
 
 // -----------------------------------------------------------------------
 // PANTALLAS
@@ -49,24 +50,36 @@ fun WelcomeScreen(
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    // Interceptor para que el MENÚ también muestre carga
     val navegacionConCarga: (AppScreen) -> Unit = { screen ->
         scope.launch {
             isLoading = true
-            delay(2000) //DAMOS 2 SEGUNDOS DE DELAY CADA VEZ QUE SE CARGUEN LAS PANTALLAS
+            delay(1000)
             isLoading = false
             onNavigateTo(screen)
         }
     }
 
     Scaffold(
-        // Pasamos el interceptor al menú
         topBar = { VeterinariaTopBar("Veterinaria Duoc", navegacionConCarga, onFinalizarApp) }
     ) { paddingValues ->
+
+        // 1. Usamos un BOX para poder poner fondo detrás
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
 
+            // --- IMAGEN DE FONDO ---
+            Image(
+                painter = painterResource(id = R.drawable.fondo_home), // Imagen de fondo
+                contentDescription = "Fondo",
+                contentScale = ContentScale.Crop, // Para que llene toda la pantalla
+                alpha = 0.3f, // (Opcional) La hacemos un poco transparente para leer mejor el texto
+                modifier = Modifier.fillMaxSize()
+            )
+            // -----------------------
+
             Column(
-                modifier = Modifier.fillMaxSize().padding(24.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -82,6 +95,7 @@ fun WelcomeScreen(
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
+                    //colores de tarjeta
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -95,11 +109,12 @@ fun WelcomeScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+
                 Button(
                     onClick = {
                         scope.launch {
                             isLoading = true
-                            delay(1000) // Reducido a 1s para ser más ágil
+                            delay(1000)
                             isLoading = false
                             onStartClick()
                         }
@@ -116,7 +131,7 @@ fun WelcomeScreen(
                     onClick = {
                         scope.launch {
                             isLoading = true
-                            delay(1000) // Reducido a 1s
+                            delay(1000)
                             isLoading = false
                             onVerRegistrosClick()
                         }
