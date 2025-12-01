@@ -53,7 +53,7 @@ fun WelcomeScreen(
     val navegacionConCarga: (AppScreen) -> Unit = { screen ->
         scope.launch {
             isLoading = true
-            delay(1000) // 1 segundo (más rápido que antes)
+            delay(2000) //DAMOS 2 SEGUNDOS DE DELAY CADA VEZ QUE SE CARGUEN LAS PANTALLAS
             isLoading = false
             onNavigateTo(screen)
         }
@@ -468,7 +468,7 @@ fun PantallaDeCarga(mensaje: String = "Cargando...") {
                 Image(
                     painter = painterResource(id = R.drawable.logo1),
                     contentDescription = "Logo Carga",
-                    modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+                    modifier = Modifier.size(200.dp).padding(bottom = 16.dp)
                 )
                 CircularProgressIndicator(modifier = Modifier.size(40.dp), strokeWidth = 4.dp, color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(16.dp))
