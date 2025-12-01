@@ -59,7 +59,7 @@ fun VeterinariaTopBar(
                     text = { Text("Ver Historial") },
                     onClick = { menuExpanded = false; onNavigateTo("resumen") }
                 )
-                Divider() // CORREGIDO: Usamos Divider en lugar de HorizontalDivider
+                Divider()
                 DropdownMenuItem(
                     text = { Text("Salir", color = Color.Red) },
                     onClick = { menuExpanded = false; onExit() }
@@ -195,7 +195,7 @@ fun RegistroScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 LinearProgressIndicator(
-                    progress = step / 4f, // CORREGIDO: Sin llaves {}
+                    progress = step / 4f,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 )
 
@@ -350,7 +350,7 @@ fun RegistroMascotaForm(onComplete: (Mascota) -> Unit, onBack: () -> Unit) {
     }
 }
 
-// CORREGIDO: Agregamos la anotación @OptIn para permitir el uso de onClick en Card
+// Agregamos la anotación @OptIn para permitir el uso de onClick en Card
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroConsultaForm(service: VeterinariaService, onComplete: (Consulta) -> Unit, onBack: () -> Unit) {
@@ -384,7 +384,7 @@ fun RegistroConsultaForm(service: VeterinariaService, onComplete: (Consulta) -> 
     }
 }
 
-// CORREGIDO: Agregamos la anotación @OptIn para permitir el uso de onClick en Card
+// Agregamos la anotación @OptIn para permitir el uso de onClick en Card
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeleccionMedicamentoForm(service: VeterinariaService, listaMedicamentos: List<Medicamento>, titulo: String, onComplete: (Medicamento) -> Unit, onBack: () -> Unit) {
