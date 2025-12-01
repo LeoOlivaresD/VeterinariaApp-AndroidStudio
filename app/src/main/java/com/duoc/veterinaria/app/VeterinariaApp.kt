@@ -22,7 +22,7 @@ import com.duoc.veterinaria.viewmodel.VeterinariaViewModel
 
 @Composable
 fun VeterinariaApp(onExit: () -> Unit) {
-    // 1. Estado inicial usando AppScreen (NO Strings)
+    // 1. Estado inicial usando AppScreen
     var currentScreen by remember { mutableStateOf(AppScreen.Splash) }
 
     val viewModel: VeterinariaViewModel = viewModel()
@@ -35,6 +35,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
 
         // PANTALLA SPLASH
+        //Transiciones suaves al iniciar y cambiar de pantalla usando AnimatedVisibility
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Splash,
             enter = fadeIn(),
@@ -72,8 +73,8 @@ fun VeterinariaApp(onExit: () -> Unit) {
         // PANTALLA REGISTRO
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Registro,
-            enter = fadeIn(),
-            exit = fadeOut()
+            enter = fadeIn(), // Animación de entrada fadeIn
+            exit = fadeOut() // Animación de salida fadeOut
         ) {
             val tempService = com.duoc.veterinaria.data.service.VeterinariaService()
 

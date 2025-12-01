@@ -6,8 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +24,7 @@ import com.duoc.veterinaria.R
 import com.duoc.veterinaria.data.model.*
 import com.duoc.veterinaria.data.service.VeterinariaService
 import com.duoc.veterinaria.ui.navigation.AppScreen
+import com.duoc.veterinaria.ui.navigation.VeterinariaTopBar
 import com.duoc.veterinaria.utils.Validaciones
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -457,6 +456,7 @@ fun SeleccionMedicamentoForm(service: VeterinariaService, listaMedicamentos: Lis
 // Componentes Visuales
 // -----------------------------------------------------------------------
 
+//Notificaciones de progreso
 @Composable
 fun PantallaDeCarga(mensaje: String = "Cargando...") {
     Surface(
@@ -466,7 +466,7 @@ fun PantallaDeCarga(mensaje: String = "Cargando...") {
         Box(contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    painter = painterResource(id = R.drawable.logo1),
                     contentDescription = "Logo Carga",
                     modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
                 )
@@ -514,12 +514,12 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                painter = painterResource(id = R.drawable.logo2),
                 contentDescription = "Logo Veterinaria",
                 modifier = Modifier.size(150.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Veterinaria App v1.0", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(text = "Veterinaria Duoc UC", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(32.dp))
             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(48.dp), strokeWidth = 4.dp)
         }
