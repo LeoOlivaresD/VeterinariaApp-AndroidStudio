@@ -1,6 +1,11 @@
 package com.duoc.veterinaria.ui.navigation
 
+// Agregamos los imports de los íconos específicos
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -8,15 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-//MENU DESPLEGABLE
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VeterinariaTopBar(
     titulo: String,
-    onNavigateTo: (AppScreen) -> Unit, // Recibe la acción de navegar usando el Enum
-    onExit: () -> Unit                 // Recibe la acción de cerrar la app
+    onNavigateTo: (AppScreen) -> Unit,
+    onExit: () -> Unit
 ) {
-    // Estado para controlar si el menú de 3 puntos está abierto o cerrado
     var menuExpanded by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -28,49 +31,74 @@ fun VeterinariaTopBar(
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         actions = {
-            // Icono de 3 puntos (MoreVert)
             IconButton(onClick = { menuExpanded = true }) {
-                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menú de opciones")
+                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Opciones")
             }
 
-            // Menú Desplegable
             DropdownMenu(
                 expanded = menuExpanded,
                 onDismissRequest = { menuExpanded = false }
             ) {
-                // Opción 1: Inicio
+                // Opción 1: Inicio (Ícono Casa)
                 DropdownMenuItem(
                     text = { Text("Inicio") },
                     onClick = {
                         menuExpanded = false
                         onNavigateTo(AppScreen.Welcome)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = null
+                        )
                     }
                 )
-                // Opción 2: Registrar
+
+                // Opción 2: Registrar (Ícono Suma)
                 DropdownMenuItem(
                     text = { Text("Registrar Atención") },
                     onClick = {
                         menuExpanded = false
                         onNavigateTo(AppScreen.Registro)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null
+                        )
                     }
                 )
-                // Opción 3: Historial
+
+                // Opción 3: Historial (Ícono Lista)
                 DropdownMenuItem(
                     text = { Text("Ver Historial") },
                     onClick = {
                         menuExpanded = false
                         onNavigateTo(AppScreen.Resumen)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.List,
+                            contentDescription = null
+                        )
                     }
                 )
 
-                Divider() // Línea divisoria visual
+                Divider()
 
-                // Opción 4: Salir (en rojo)
+                // Opción 4: Salir (Ícono Cerrar - Color Rojo)
                 DropdownMenuItem(
                     text = { Text("Salir", color = Color.Red) },
                     onClick = {
                         menuExpanded = false
                         onExit()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = Color.Red // Teñimos el ícono de rojo también
+                        )
                     }
                 )
             }
