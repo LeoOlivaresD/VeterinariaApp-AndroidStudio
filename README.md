@@ -291,13 +291,9 @@ Todos los derechos reservados
 
 ## Autor
 
-**Leonardo [Tu Apellido]**  
+**Leonardo Olivares **  
 Estudiante de Desarrollo de Aplicaciones Móviles  
 Duoc UC - 2024
-
-Email: [tu-email@duocuc.cl]  
-LinkedIn: [tu-linkedin]  
-GitHub: [tu-github]
 
 ---
 ![Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4?style=for-the-badge&logo=jetpackcompose)
