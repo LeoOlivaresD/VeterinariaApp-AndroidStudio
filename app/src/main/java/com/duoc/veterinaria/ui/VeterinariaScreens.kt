@@ -283,7 +283,6 @@ fun ResumenScreen(
     onNavigateTo: (AppScreen) -> Unit,
     onExit: () -> Unit
 ) {
-    // Estado de carga para navegación desde menú
     var isLoadingMenu by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -310,15 +309,41 @@ fun ResumenScreen(
                     Text("No hay atenciones registradas.", modifier = Modifier.padding(vertical = 16.dp))
                 } else {
                     registros.forEachIndexed { index, registro ->
-                        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), elevation = CardDefaults.cardElevation(4.dp)) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            elevation = CardDefaults.cardElevation(4.dp)
+                        ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text("Atención ${index + 1} - ${registro.fecha}", fontWeight = FontWeight.Bold)
+                                Text("Atención ${index + 1}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+
+                                // --- INFORMACIÓN RECUPERADA ---
+                                Text("Fecha: ${registro.fecha}", fontSize = 12.sp, color = Color.Gray)
+                                Text("Veterinario: ${registro.veterinario}", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+
+                                Divider(modifier = Modifier.padding(vertical = 8.dp))
+
                                 Text("Dueño: ${registro.dueno.nombre}")
-                                Text("Mascota: ${registro.mascota.nombre}")
+                                Text("Mascota: ${registro.mascota.nombre} (${registro.mascota.especie})")
                                 Text("Consulta: ${registro.consulta.descripcion}")
+
                                 if(registro.medicamento.nombre != "N/A") {
-                                    Text("Medicamento: ${registro.medicamento.nombre} ($${registro.precioFinalMedicamento})")
+                                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                                    Text("Medicamento: ${registro.medicamento.nombre}", fontWeight = FontWeight.SemiBold)
+                                    Text("Precio Final: $${registro.precioFinalMedicamento}")
+
+                                    // Detalle del descuento (si existe)
+                                    if (registro.detalleDescuento.isNotEmpty()) {
+                                        Text(
+                                            text = registro.detalleDescuento,
+                                            color = Color.Red, // O MaterialTheme.colorScheme.primary
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                 }
+                                // -----------------------------
                             }
                         }
                     }
@@ -438,15 +463,29 @@ fun RegistroConsultaForm(service: VeterinariaService, onComplete: (Consulta) -> 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SeleccionMedicamentoForm(service: VeterinariaService, listaMedicamentos: List<Medicamento>, titulo: String, onComplete: (Medicamento) -> Unit, onBack: () -> Unit) {
+fun SeleccionMedicamentoForm(
+    service: VeterinariaService,
+    listaMedicamentos: List<Medicamento>,
+    titulo: String,
+    onComplete: (Medicamento) -> Unit,
+    onBack: () -> Unit
+) {
     var selected by remember { mutableStateOf<Medicamento?>(null) }
+
     Column {
         Text(titulo, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
         listaMedicamentos.forEach { med ->
             val final = service.obtenerPrecioFinalMedicamento(med)
+
             Card(
                 onClick = { selected = med },
-                colors = CardDefaults.cardColors(containerColor = if(selected==med) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),
+                colors = CardDefaults.cardColors(
+                    containerColor = if(selected==med)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.surface
+                ),
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
             ) {
                 Column(Modifier.padding(16.dp)) {
@@ -454,15 +493,55 @@ fun SeleccionMedicamentoForm(service: VeterinariaService, listaMedicamentos: Lis
                         RadioButton(selected == med, onClick = { selected = med })
                         Text(med.nombre, fontWeight = FontWeight.Bold)
                     }
-                    Text("Precio: $$final", modifier = Modifier.padding(start = 32.dp))
-                    if (final < med.precio) Text(service.obtenerDetalleDescuento(med), color = Color.Red, fontSize = 12.sp, modifier = Modifier.padding(start = 32.dp))
+
+                    if (final < med.precio) {
+                        // PRECIO CON DESCUENTO
+
+                        // 1. Precio Original (Convertido a Int para quitar decimales)
+                        Text(
+                            text = "Precio normal: $${med.precio.toInt()}", //CAMBIO (.toInt())
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough,
+                            modifier = Modifier.padding(start = 32.dp)
+                        )
+
+                        // 2. Precio Final (Convertido a Int)
+                        Text(
+                            text = "Precio oferta: $${final.toInt()}", //CAMBIO (.toInt())
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 32.dp)
+                        )
+
+                        // Razón del descuento
+                        Text(
+                            text = service.obtenerDetalleDescuento(med),
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 32.dp)
+                        )
+                    } else {
+                        // PRECIO NORMAL (Sin descuento)
+                        Text(
+                            text = "Precio: $${final.toInt()}", //CAMBIO (.toInt())
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 32.dp)
+                        )
+                    }
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
             OutlinedButton(onClick = onBack) { Text("Volver") }
-            Button(onClick = { selected?.let { onComplete(it) } }, enabled = selected != null) { Text("Finalizar") }
+            Button(
+                onClick = { selected?.let { onComplete(it) } },
+                enabled = selected != null
+            ) { Text("Finalizar") }
         }
     }
 }
