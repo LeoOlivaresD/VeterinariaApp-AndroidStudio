@@ -1,4 +1,8 @@
 package com.duoc.veterinaria.ui
+
+import android.app.Activity
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,66 +12,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import com.duoc.veterinaria.R
 import com.duoc.veterinaria.data.model.*
 import com.duoc.veterinaria.data.service.VeterinariaService
+import com.duoc.veterinaria.ui.navigation.AppScreen
 import com.duoc.veterinaria.utils.Validaciones
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-// -----------------------------------------------------------------------
-// 1. COMPONENTE DE MENÚ REUTILIZABLE
-// -----------------------------------------------------------------------
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun VeterinariaTopBar(
-    titulo: String,
-    onNavigateTo: (String) -> Unit,
-    onExit: () -> Unit
-) {
-    var menuExpanded by remember { mutableStateOf(false) }
-
-    TopAppBar(
-        title = { Text(titulo, fontSize = 20.sp, fontWeight = FontWeight.Bold) },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        actions = {
-            IconButton(onClick = { menuExpanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Menú")
-            }
-            DropdownMenu(
-                expanded = menuExpanded,
-                onDismissRequest = { menuExpanded = false }
-            ) {
-                DropdownMenuItem(
-                    text = { Text("Inicio") },
-                    onClick = { menuExpanded = false; onNavigateTo("welcome") }
-                )
-                DropdownMenuItem(
-                    text = { Text("Registrar Atención") },
-                    onClick = { menuExpanded = false; onNavigateTo("registro") }
-                )
-                DropdownMenuItem(
-                    text = { Text("Ver Historial") },
-                    onClick = { menuExpanded = false; onNavigateTo("resumen") }
-                )
-                Divider()
-                DropdownMenuItem(
-                    text = { Text("Salir", color = Color.Red) },
-                    onClick = { menuExpanded = false; onExit() }
-                )
-            }
-        }
-    )
-}
 
 // -----------------------------------------------------------------------
 // PANTALLAS
@@ -81,20 +45,29 @@ fun WelcomeScreen(
     totalMascotas: Int,
     totalConsultas: Int,
     ultimoDueno: String,
-    onNavigateTo: (String) -> Unit
+    onNavigateTo: (AppScreen) -> Unit
 ) {
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+    // Interceptor para que el MENÚ también muestre carga
+    val navegacionConCarga: (AppScreen) -> Unit = { screen ->
+        scope.launch {
+            isLoading = true
+            delay(1000) // 1 segundo (más rápido que antes)
+            isLoading = false
+            onNavigateTo(screen)
+        }
+    }
+
     Scaffold(
-        topBar = { VeterinariaTopBar("Veterinaria Duoc", onNavigateTo, onFinalizarApp) }
+        // Pasamos el interceptor al menú
+        topBar = { VeterinariaTopBar("Veterinaria Duoc", navegacionConCarga, onFinalizarApp) }
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
 
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
+                modifier = Modifier.fillMaxSize().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -127,7 +100,7 @@ fun WelcomeScreen(
                     onClick = {
                         scope.launch {
                             isLoading = true
-                            delay(1500)
+                            delay(1000) // Reducido a 1s para ser más ágil
                             isLoading = false
                             onStartClick()
                         }
@@ -144,7 +117,7 @@ fun WelcomeScreen(
                     onClick = {
                         scope.launch {
                             isLoading = true
-                            delay(1000)
+                            delay(1000) // Reducido a 1s
                             isLoading = false
                             onVerRegistrosClick()
                         }
@@ -157,9 +130,7 @@ fun WelcomeScreen(
             }
 
             if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                PantallaDeCarga(mensaje = "Cargando módulos...")
             }
         }
     }
@@ -170,7 +141,7 @@ fun RegistroScreen(
     service: VeterinariaService,
     onRegistroComplete: (RegistroAtencion) -> Unit,
     onBackClick: () -> Unit,
-    onNavigateTo: (String) -> Unit,
+    onNavigateTo: (AppScreen) -> Unit,
     onExit: () -> Unit
 ) {
     var step by remember { mutableStateOf(1) }
@@ -181,11 +152,23 @@ fun RegistroScreen(
     var listaMedicamentosAMostrar by remember { mutableStateOf<List<Medicamento>>(emptyList()) }
     var tituloPantallaMedicamentos by remember { mutableStateOf("Seleccionar Producto") }
 
+    // Estados de carga (Guardado y Navegación general)
     var isSaving by remember { mutableStateOf(false) }
+    var isLoadingMenu by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+    // Interceptor para el menú en esta pantalla
+    val navegacionConCarga: (AppScreen) -> Unit = { screen ->
+        scope.launch {
+            isLoadingMenu = true
+            delay(1000)
+            isLoadingMenu = false
+            onNavigateTo(screen)
+        }
+    }
+
     Scaffold(
-        topBar = { VeterinariaTopBar("Registro de Atención", onNavigateTo, onExit) }
+        topBar = { VeterinariaTopBar("Registro de Atención", navegacionConCarga, onExit) }
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             Column(
@@ -268,22 +251,78 @@ fun RegistroScreen(
             }
 
             if (isSaving) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background.copy(alpha = 0.7f)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Guardando registro...", fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
+                PantallaDeCarga(mensaje = "Guardando registro...")
+            }
+            // Mostramos carga si navegamos desde el menú
+            if (isLoadingMenu) {
+                PantallaDeCarga(mensaje = "Cargando...")
             }
         }
     }
 }
+
+@Composable
+fun ResumenScreen(
+    registros: List<RegistroAtencion>,
+    onNuevaAtencion: () -> Unit,
+    onVolverInicio: () -> Unit,
+    onNavigateTo: (AppScreen) -> Unit,
+    onExit: () -> Unit
+) {
+    // Estado de carga para navegación desde menú
+    var isLoadingMenu by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    val navegacionConCarga: (AppScreen) -> Unit = { screen ->
+        scope.launch {
+            isLoadingMenu = true
+            delay(1000)
+            isLoadingMenu = false
+            onNavigateTo(screen)
+        }
+    }
+
+    Scaffold(
+        topBar = { VeterinariaTopBar("Historial de Atenciones", navegacionConCarga, onExit) }
+    ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                if (registros.isEmpty()) {
+                    Text("No hay atenciones registradas.", modifier = Modifier.padding(vertical = 16.dp))
+                } else {
+                    registros.forEachIndexed { index, registro ->
+                        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), elevation = CardDefaults.cardElevation(4.dp)) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text("Atención ${index + 1} - ${registro.fecha}", fontWeight = FontWeight.Bold)
+                                Text("Dueño: ${registro.dueno.nombre}")
+                                Text("Mascota: ${registro.mascota.nombre}")
+                                Text("Consulta: ${registro.consulta.descripcion}")
+                                if(registro.medicamento.nombre != "N/A") {
+                                    Text("Medicamento: ${registro.medicamento.nombre} ($${registro.precioFinalMedicamento})")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = onNuevaAtencion, modifier = Modifier.fillMaxWidth()) { Text("Registrar otra atención") }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(onClick = onVolverInicio, modifier = Modifier.fillMaxWidth()) { Text("Volver al Inicio") }
+            }
+
+            if (isLoadingMenu) {
+                PantallaDeCarga(mensaje = "Cargando...")
+            }
+        }
+    }
+}
+
 
 @Composable
 fun RegistroDuenoForm(onComplete: (Cliente) -> Unit, onBack: () -> Unit) {
@@ -350,7 +389,6 @@ fun RegistroMascotaForm(onComplete: (Mascota) -> Unit, onBack: () -> Unit) {
     }
 }
 
-// Agregamos la anotación @OptIn para permitir el uso de onClick en Card
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroConsultaForm(service: VeterinariaService, onComplete: (Consulta) -> Unit, onBack: () -> Unit) {
@@ -384,7 +422,6 @@ fun RegistroConsultaForm(service: VeterinariaService, onComplete: (Consulta) -> 
     }
 }
 
-// Agregamos la anotación @OptIn para permitir el uso de onClick en Card
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeleccionMedicamentoForm(service: VeterinariaService, listaMedicamentos: List<Medicamento>, titulo: String, onComplete: (Medicamento) -> Unit, onBack: () -> Unit) {
@@ -416,46 +453,75 @@ fun SeleccionMedicamentoForm(service: VeterinariaService, listaMedicamentos: Lis
     }
 }
 
-@Composable
-fun ResumenScreen(
-    registros: List<RegistroAtencion>,
-    onNuevaAtencion: () -> Unit,
-    onVolverInicio: () -> Unit,
-    onNavigateTo: (String) -> Unit,
-    onExit: () -> Unit
-) {
-    Scaffold(
-        topBar = { VeterinariaTopBar("Historial de Atenciones", onNavigateTo, onExit) }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            if (registros.isEmpty()) {
-                Text("No hay atenciones registradas.", modifier = Modifier.padding(vertical = 16.dp))
-            } else {
-                registros.forEachIndexed { index, registro ->
-                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), elevation = CardDefaults.cardElevation(4.dp)) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Atención ${index + 1} - ${registro.fecha}", fontWeight = FontWeight.Bold)
-                            Text("Dueño: ${registro.dueno.nombre}")
-                            Text("Mascota: ${registro.mascota.nombre}")
-                            Text("Consulta: ${registro.consulta.descripcion}")
-                            if(registro.medicamento.nombre != "N/A") {
-                                Text("Medicamento: ${registro.medicamento.nombre} ($${registro.precioFinalMedicamento})")
-                            }
-                        }
-                    }
-                }
-            }
+// -----------------------------------------------------------------------
+// Componentes Visuales
+// -----------------------------------------------------------------------
 
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = onNuevaAtencion, modifier = Modifier.fillMaxWidth()) { Text("Registrar otra atención") }
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(onClick = onVolverInicio, modifier = Modifier.fillMaxWidth()) { Text("Volver al Inicio") }
+@Composable
+fun PantallaDeCarga(mensaje: String = "Cargando...") {
+    Surface(
+        modifier = Modifier.fillMaxSize().zIndex(10f),
+        color = MaterialTheme.colorScheme.background.copy(alpha = 0.9f)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    contentDescription = "Logo Carga",
+                    modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+                )
+                CircularProgressIndicator(modifier = Modifier.size(40.dp), strokeWidth = 4.dp, color = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = mensaje, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            }
+        }
+    }
+}
+
+@Composable
+fun SplashScreen(onSplashFinished: () -> Unit) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    LaunchedEffect(Unit) {
+        activity?.let {
+            val controller = WindowInsetsControllerCompat(it.window, it.window.decorView)
+            controller.hide(WindowInsetsCompat.Type.statusBars())
+        }
+        delay(2000)
+        onSplashFinished()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            activity?.let {
+                val controller = WindowInsetsControllerCompat(it.window, it.window.decorView)
+                controller.show(WindowInsetsCompat.Type.statusBars())
+            }
+        }
+    }
+
+    val gradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.primaryContainer
+        )
+    )
+
+    Box(
+        modifier = Modifier.fillMaxSize().background(gradient),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = "Logo Veterinaria",
+                modifier = Modifier.size(150.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Veterinaria App v1.0", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(32.dp))
+            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(48.dp), strokeWidth = 4.dp)
         }
     }
 }
