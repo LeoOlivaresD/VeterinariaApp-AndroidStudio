@@ -2,10 +2,11 @@ package com.duoc.veterinaria.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// COLORES PERSONALIZADOS
+val AzulRey = Color(0xFF2962FF)      // Azul fuerte para botones (Royal Blue)
+val CelesteClaro = Color(0xFFE3F2FD) // Celeste muy suave para el fondo general
+val CelesteOscuro = Color(0xFF90CAF9)// Celeste un poco más fuerte para superficies/tarjetas
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Colores base (Blanco/Negro)
+val Blanco = Color.White
+val Negro = Color.Black
