@@ -56,7 +56,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
             exit = fadeOut()
         ) {
             WelcomeScreen(
-                // AQUÍ ARREGLAMOS LOS BOTONES:
+
                 onStartClick = { currentScreen = AppScreen.Registro }, // Botón Registrar
                 onVerRegistrosClick = { currentScreen = AppScreen.Resumen }, // Botón Ver Historial
                 onFinalizarApp = onExit, // Botón Salir
