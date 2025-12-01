@@ -376,7 +376,7 @@ fun RegistroDuenoForm(onComplete: (Cliente) -> Unit, onBack: () -> Unit) {
         OutlinedTextField(
             value = nombre,
             onValueChange = { nombre = it; errorNombre = if (it.isEmpty()) "Requerido" else "" },
-            label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth(), isError = errorNombre.isNotEmpty()
+            label = { Text("Nombre dueño") }, modifier = Modifier.fillMaxWidth(), isError = errorNombre.isNotEmpty()
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -413,7 +413,7 @@ fun RegistroMascotaForm(onComplete: (Mascota) -> Unit, onBack: () -> Unit) {
     var peso by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre mascota") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = especie, onValueChange = { especie = it }, label = { Text("Especie") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = edad, onValueChange = { edad = it.filter { c -> c.isDigit() } }, label = { Text("Edad") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = peso, onValueChange = { peso = it }, label = { Text("Peso") }, modifier = Modifier.fillMaxWidth())
