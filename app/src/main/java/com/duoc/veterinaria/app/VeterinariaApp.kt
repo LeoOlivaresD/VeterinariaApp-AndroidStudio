@@ -19,7 +19,7 @@ import com.duoc.veterinaria.ui.ResumenScreen
 import com.duoc.veterinaria.ui.SplashScreen
 import com.duoc.veterinaria.ui.WelcomeScreen
 import com.duoc.veterinaria.viewmodel.VeterinariaViewModel
-
+import androidx.compose.animation.core.tween
 @Composable
 fun VeterinariaApp(onExit: () -> Unit) {
     // 1. Estado inicial usando AppScreen
@@ -38,8 +38,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
         //Transiciones suaves al iniciar y cambiar de pantalla usando AnimatedVisibility
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Splash,
-            enter = fadeIn(),
-            exit = fadeOut()
+            //enter = fadeIn(),
+            //exit = fadeOut()
+            enter = fadeIn(animationSpec = tween(2000)),
+            exit = fadeOut(animationSpec = tween(2000))
         ) {
             SplashScreen(
                 onSplashFinished = {
@@ -52,8 +54,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
         // PANTALLA HOME (WELCOME)
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Welcome,
-            enter = fadeIn(),
-            exit = fadeOut()
+            //enter = fadeIn(),
+            //exit = fadeOut()
+            enter = fadeIn(animationSpec = tween(2000)),
+            exit = fadeOut(animationSpec = tween(2000))
         ) {
             WelcomeScreen(
 
@@ -73,8 +77,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
         // PANTALLA REGISTRO
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Registro,
-            enter = fadeIn(), // Animación de entrada fadeIn
-            exit = fadeOut() // Animación de salida fadeOut
+            //enter = fadeIn(), // Animación de entrada fadeIn
+            //exit = fadeOut() // Animación de salida fadeOut
+            enter = fadeIn(animationSpec = tween(2000)),
+            exit = fadeOut(animationSpec = tween(2000))
         ) {
             val tempService = com.duoc.veterinaria.data.service.VeterinariaService()
 
@@ -94,8 +100,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
         // PANTALLA RESUMEN
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Resumen,
-            enter = fadeIn(),
-            exit = fadeOut()
+            //enter = fadeIn(),
+            //exit = fadeOut()
+            enter = fadeIn(animationSpec = tween(2000)),
+            exit = fadeOut(animationSpec = tween(2000))
         ) {
             ResumenScreen(
                 registros = registros,
