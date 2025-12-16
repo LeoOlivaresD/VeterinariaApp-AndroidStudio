@@ -1,12 +1,13 @@
 package com.duoc.veterinaria.ui.navigation
 
-// Agregamos los imports de los íconos específicos
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -39,7 +40,7 @@ fun VeterinariaTopBar(
                 expanded = menuExpanded,
                 onDismissRequest = { menuExpanded = false }
             ) {
-                // Opción 1: Inicio (Ícono Casa)
+                // Opción 1: Inicio
                 DropdownMenuItem(
                     text = { Text("Inicio") },
                     onClick = {
@@ -54,7 +55,7 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // Opción 2: Registrar (Ícono Suma)
+                // Opción 2: Registrar
                 DropdownMenuItem(
                     text = { Text("Registrar Atención") },
                     onClick = {
@@ -69,7 +70,7 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // Opción 3: Historial (Ícono Lista)
+                // Opción 3: Historial
                 DropdownMenuItem(
                     text = { Text("Ver Historial") },
                     onClick = {
@@ -86,7 +87,39 @@ fun VeterinariaTopBar(
 
                 Divider()
 
-                // Opción 4: Salir (Ícono Cerrar - Color Rojo)
+                // Opción 4: Servicios
+                DropdownMenuItem(
+                    text = { Text("Gestión de Servicios") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.Servicio)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = null
+                        )
+                    }
+                )
+
+                // NUEVO: Opción 5: Content Provider
+                DropdownMenuItem(
+                    text = { Text("Content Provider") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.Provider)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null
+                        )
+                    }
+                )
+
+                Divider()
+
+                // Opción 6: Salir
                 DropdownMenuItem(
                     text = { Text("Salir", color = Color.Red) },
                     onClick = {
@@ -97,7 +130,7 @@ fun VeterinariaTopBar(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
-                            tint = Color.Red // Teñimos el ícono de rojo también
+                            tint = Color.Red
                         )
                     }
                 )

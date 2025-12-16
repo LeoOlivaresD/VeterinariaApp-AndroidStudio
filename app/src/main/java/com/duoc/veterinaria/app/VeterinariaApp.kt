@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -16,25 +18,15 @@ import com.duoc.veterinaria.viewmodel.ConsultaViewModel
 import com.duoc.veterinaria.viewmodel.MainViewModel
 import com.duoc.veterinaria.viewmodel.RegistroViewModel
 
-/**
- * Composable principal de la aplicación.
- * Implementa el patrón MVVM con separación clara de responsabilidades.
- *
- * Principio SRP: Solo maneja la navegación entre pantallas.
- * Principio OCP: Fácil agregar nuevas pantallas sin modificar código existente.
- */
 @Composable
 fun VeterinariaApp(onExit: () -> Unit) {
 
-    // Estado de navegación
     var currentScreen by remember { mutableStateOf(AppScreen.Splash) }
 
-    // ViewModels específicos por pantalla (Principio SRP)
     val mainViewModel: MainViewModel = viewModel()
     val registroViewModel: RegistroViewModel = viewModel()
     val consultaViewModel: ConsultaViewModel = viewModel()
 
-    // Observar estados desde ViewModels
     val totalMascotas by mainViewModel.totalMascotas.observeAsState(0)
     val totalConsultas by mainViewModel.totalConsultas.observeAsState(0)
     val ultimoDueno by mainViewModel.ultimoDueno.observeAsState("N/A")
@@ -51,7 +43,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
             SplashScreen(
                 onSplashFinished = {
                     currentScreen = AppScreen.Welcome
-                    mainViewModel.cargarEstadisticas() // Cargar datos al iniciar
+                    mainViewModel.cargarEstadisticas()
                 }
             )
         }
@@ -68,7 +60,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 ultimoDueno = ultimoDueno,
                 onStartClick = { currentScreen = AppScreen.Registro },
                 onVerRegistrosClick = {
-                    consultaViewModel.cargarRegistros() // Recargar antes de mostrar
+                    consultaViewModel.cargarRegistros()
                     currentScreen = AppScreen.Resumen
                 },
                 onFinalizarApp = onExit,
@@ -90,7 +82,6 @@ fun VeterinariaApp(onExit: () -> Unit) {
             RegistroScreen(
                 viewModel = registroViewModel,
                 onRegistroComplete = {
-                    // Recargar estadísticas y consultas después de guardar
                     mainViewModel.cargarEstadisticas()
                     consultaViewModel.cargarRegistros()
                     currentScreen = AppScreen.Resumen
@@ -111,12 +102,54 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 registros = registros,
                 onNuevaAtencion = { currentScreen = AppScreen.Registro },
                 onVolverInicio = {
-                    mainViewModel.cargarEstadisticas() // Actualizar stats al volver
+                    mainViewModel.cargarEstadisticas()
                     currentScreen = AppScreen.Welcome
                 },
                 onNavigateTo = { dest -> currentScreen = dest },
                 onExit = onExit
             )
+        }
+
+        // --- SERVICIO SCREEN ---
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.Servicio,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Gestión de Servicios",
+                        { dest -> currentScreen = dest },
+                        onExit
+                    )
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    ServicioScreen()
+                }
+            }
+        }
+
+        // --- PROVIDER SCREEN (NUEVO) ---
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.Provider,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Content Provider",
+                        { dest -> currentScreen = dest },
+                        onExit
+                    )
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    ProviderScreen()
+                }
+            }
         }
     }
 }
