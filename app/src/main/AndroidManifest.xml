@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -40,7 +42,17 @@
                 android:value="Recordatorios de consultas veterinarias" />
         </service>
 
-        <!-- Content Provider (SIN readPermission) -->
+        <!-- Broadcast Receiver para detectar cambios de WiFi -->
+        <receiver
+            android:name=".receiver.WifiReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Content Provider -->
         <provider
             android:name=".provider.VeterinariaProvider"
             android:authorities="com.duoc.veterinaria.provider"

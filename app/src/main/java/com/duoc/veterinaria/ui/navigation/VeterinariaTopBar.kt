@@ -102,7 +102,7 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // NUEVO: Opción 5: Content Provider
+                // Opción 5: Content Provider
                 DropdownMenuItem(
                     text = { Text("Content Provider") },
                     onClick = {
@@ -117,9 +117,24 @@ fun VeterinariaTopBar(
                     }
                 )
 
+                // Opción 6: Broadcast Receiver Test
+                DropdownMenuItem(
+                    text = { Text("Broadcast Receiver Test") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.BroadcastTest)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = null
+                        )
+                    }
+                )
+
                 Divider()
 
-                // Opción 6: Salir
+                // Opción 7: Salir
                 DropdownMenuItem(
                     text = { Text("Salir", color = Color.Red) },
                     onClick = {

@@ -151,5 +151,24 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 }
             }
         }
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.BroadcastTest,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Broadcast Receiver Test",
+                        { dest -> currentScreen = dest },
+                        onExit
+                    )
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    BroadcastTestScreen()
+                }
+            }
+        }
     }
 }
