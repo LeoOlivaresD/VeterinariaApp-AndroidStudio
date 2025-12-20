@@ -1,6 +1,7 @@
 package com.duoc.veterinaria.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
@@ -48,12 +49,23 @@ fun VeterinariaTopBar(
                         onNavigateTo(AppScreen.Welcome)
                     },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = null
-                        )
+                        Icon(imageVector = Icons.Default.Home, contentDescription = null)
                     }
                 )
+
+                // NUEVO: Mi Información
+                DropdownMenuItem(
+                    text = { Text("Mi Información") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.AccesoUsuarios)
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
+                    }
+                )
+
+                Divider()
 
                 // Opción 2: Registrar
                 DropdownMenuItem(
@@ -63,10 +75,7 @@ fun VeterinariaTopBar(
                         onNavigateTo(AppScreen.Registro)
                     },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null
-                        )
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
                     }
                 )
 
@@ -78,10 +87,7 @@ fun VeterinariaTopBar(
                         onNavigateTo(AppScreen.Resumen)
                     },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.List,
-                            contentDescription = null
-                        )
+                        Icon(imageVector = Icons.Default.List, contentDescription = null)
                     }
                 )
 
@@ -95,10 +101,7 @@ fun VeterinariaTopBar(
                         onNavigateTo(AppScreen.Servicio)
                     },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = null
-                        )
+                        Icon(imageVector = Icons.Default.Notifications, contentDescription = null)
                     }
                 )
 
@@ -110,10 +113,7 @@ fun VeterinariaTopBar(
                         onNavigateTo(AppScreen.Provider)
                     },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = null
-                        )
+                        Icon(imageVector = Icons.Default.Share, contentDescription = null)
                     }
                 )
 
@@ -125,18 +125,15 @@ fun VeterinariaTopBar(
                         onNavigateTo(AppScreen.BroadcastTest)
                     },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = null
-                        )
+                        Icon(imageVector = Icons.Default.Notifications, contentDescription = null)
                     }
                 )
 
                 Divider()
 
-                // Opción 7: Salir
+                // Opción 7: Cerrar Sesión (antes era "Salir")
                 DropdownMenuItem(
-                    text = { Text("Salir", color = Color.Red) },
+                    text = { Text("Cerrar Sesión", color = Color.Red) },
                     onClick = {
                         menuExpanded = false
                         onExit()

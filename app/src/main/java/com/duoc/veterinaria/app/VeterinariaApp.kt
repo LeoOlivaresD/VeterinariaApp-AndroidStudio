@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.duoc.veterinaria.ui.*
 import com.duoc.veterinaria.ui.navigation.AppScreen
+import com.duoc.veterinaria.viewmodel.AuthViewModel
 import com.duoc.veterinaria.viewmodel.ConsultaViewModel
 import com.duoc.veterinaria.viewmodel.MainViewModel
 import com.duoc.veterinaria.viewmodel.RegistroViewModel
@@ -23,10 +24,15 @@ fun VeterinariaApp(onExit: () -> Unit) {
 
     var currentScreen by remember { mutableStateOf(AppScreen.Splash) }
 
+    // ViewModels
+    val authViewModel: AuthViewModel = viewModel()
     val mainViewModel: MainViewModel = viewModel()
     val registroViewModel: RegistroViewModel = viewModel()
     val consultaViewModel: ConsultaViewModel = viewModel()
 
+    // Estados observados
+    val isAuthenticated by authViewModel.isAuthenticated.observeAsState(false)
+    val currentUser by authViewModel.currentUser.observeAsState()
     val totalMascotas by mainViewModel.totalMascotas.observeAsState(0)
     val totalConsultas by mainViewModel.totalConsultas.observeAsState(0)
     val ultimoDueno by mainViewModel.ultimoDueno.observeAsState("N/A")
@@ -42,6 +48,20 @@ fun VeterinariaApp(onExit: () -> Unit) {
         ) {
             SplashScreen(
                 onSplashFinished = {
+                    currentScreen = AppScreen.Login
+                }
+            )
+        }
+
+        // --- LOGIN SCREEN (NUEVO) ---
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.Login,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            LoginScreen(
+                viewModel = authViewModel,
+                onLoginSuccess = {
                     currentScreen = AppScreen.Welcome
                     mainViewModel.cargarEstadisticas()
                 }
@@ -63,7 +83,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
                     consultaViewModel.cargarRegistros()
                     currentScreen = AppScreen.Resumen
                 },
-                onFinalizarApp = onExit,
+                onFinalizarApp = {
+                    authViewModel.logout()
+                    currentScreen = AppScreen.Login
+                },
                 onNavigateTo = { dest ->
                     if (dest == AppScreen.Resumen) {
                         consultaViewModel.cargarRegistros()
@@ -88,7 +111,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 },
                 onBackClick = { currentScreen = AppScreen.Welcome },
                 onNavigateTo = { dest -> currentScreen = dest },
-                onExit = onExit
+                onExit = {
+                    authViewModel.logout()
+                    currentScreen = AppScreen.Login
+                }
             )
         }
 
@@ -106,7 +132,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
                     currentScreen = AppScreen.Welcome
                 },
                 onNavigateTo = { dest -> currentScreen = dest },
-                onExit = onExit
+                onExit = {
+                    authViewModel.logout()
+                    currentScreen = AppScreen.Login
+                }
             )
         }
 
@@ -121,7 +150,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
                     com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
                         "Gestión de Servicios",
                         { dest -> currentScreen = dest },
-                        onExit
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
                     )
                 }
             ) { paddingValues ->
@@ -131,7 +163,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
             }
         }
 
-        // --- PROVIDER SCREEN (NUEVO) ---
+        // --- PROVIDER SCREEN ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Provider,
             enter = fadeIn(animationSpec = tween(1000)),
@@ -142,7 +174,10 @@ fun VeterinariaApp(onExit: () -> Unit) {
                     com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
                         "Content Provider",
                         { dest -> currentScreen = dest },
-                        onExit
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
                     )
                 }
             ) { paddingValues ->
@@ -151,6 +186,8 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 }
             }
         }
+
+        // --- BROADCAST TEST SCREEN ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.BroadcastTest,
             enter = fadeIn(animationSpec = tween(1000)),
@@ -161,12 +198,42 @@ fun VeterinariaApp(onExit: () -> Unit) {
                     com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
                         "Broadcast Receiver Test",
                         { dest -> currentScreen = dest },
-                        onExit
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
                     )
                 }
             ) { paddingValues ->
                 Box(modifier = Modifier.padding(paddingValues)) {
                     BroadcastTestScreen()
+                }
+            }
+        }
+
+        // --- ACCESO USUARIOS SCREEN (NUEVO) ---
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.AccesoUsuarios,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Mi Información",
+                        { dest -> currentScreen = dest },
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
+                    )
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    AccesoUsuariosScreen(
+                        currentUser = currentUser,
+                        registros = registros
+                    )
                 }
             }
         }
