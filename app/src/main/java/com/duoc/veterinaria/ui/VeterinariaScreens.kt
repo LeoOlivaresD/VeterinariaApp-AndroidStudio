@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -286,6 +287,7 @@ fun ResumenScreen(
     onNavigateTo: (AppScreen) -> Unit,
     onExit: () -> Unit
 ) {
+    val context = LocalContext.current
     var isLoadingMenu by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -343,6 +345,63 @@ fun ResumenScreen(
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
+                                }
+
+                                // NUEVO: Botón Compartir (Intent Implícito)
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Button(
+                                    onClick = {
+                                        // Intent implícito para compartir
+                                        val shareText = buildString {
+                                            appendLine("📋 CONSULTA VETERINARIA")
+                                            appendLine()
+                                            appendLine(" Fecha: ${registro.fecha}")
+                                            appendLine(" Veterinario: ${registro.veterinario}")
+                                            appendLine()
+                                            appendLine(" Mascota: ${registro.mascota.nombre}")
+                                            appendLine(" Especie: ${registro.mascota.especie}")
+                                            appendLine(" Edad: ${registro.mascota.edad} años")
+                                            appendLine("⚖ Peso: ${registro.mascota.peso} kg")
+                                            appendLine()
+                                            appendLine(" Dueño: ${registro.dueno.nombre}")
+                                            appendLine(" Email: ${registro.dueno.email}")
+                                            appendLine(" Teléfono: ${registro.dueno.telefono}")
+                                            appendLine()
+                                            appendLine(" Tipo de consulta: ${registro.consulta.descripcion}")
+                                            appendLine(" Costo consulta: $${registro.consulta.costoConsulta}")
+
+                                            if (registro.medicamento.nombre != "N/A") {
+                                                appendLine()
+                                                appendLine(" Medicamento: ${registro.medicamento.nombre}")
+                                                appendLine(" Precio medicamento: $${registro.precioFinalMedicamento}")
+                                                if (registro.detalleDescuento.isNotEmpty()) {
+                                                    appendLine(" Descuento: ${registro.detalleDescuento}")
+                                                }
+                                            }
+
+                                            appendLine()
+                                            appendLine("---")
+                                            appendLine("Veterinaria Duoc UC")
+                                        }
+
+                                        val sendIntent = android.content.Intent().apply {
+                                            action = android.content.Intent.ACTION_SEND
+                                            putExtra(android.content.Intent.EXTRA_TEXT, shareText)
+                                            putExtra(android.content.Intent.EXTRA_SUBJECT, "Consulta Veterinaria - ${registro.mascota.nombre}")
+                                            type = "text/plain"
+                                        }
+
+                                        val shareIntent = android.content.Intent.createChooser(sendIntent, "Compartir consulta mediante...")
+                                        context.startActivity(shareIntent)
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.secondary
+                                    )
+                                ) {
+                                    androidx.compose.material.icons.Icons.Default.Share
+                                    Text("📤 Compartir Consulta")
                                 }
                             }
                         }
