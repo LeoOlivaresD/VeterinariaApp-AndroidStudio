@@ -19,7 +19,6 @@ import com.duoc.veterinaria.viewmodel.Usuario
 
 /**
  * Pantalla de Acceso de Usuarios.
- *
  * Muestra:
  * - Información del usuario autenticado
  * - Consultas/atenciones relacionadas con el usuario

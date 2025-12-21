@@ -53,7 +53,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
             )
         }
 
-        // --- LOGIN SCREEN (NUEVO) ---
+        // --- LOGIN SCREEN ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Login,
             enter = fadeIn(animationSpec = tween(1000)),
@@ -211,7 +211,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
             }
         }
 
-        // --- ACCESO USUARIOS SCREEN (NUEVO) ---
+        // --- ACCESO USUARIOS SCREEN ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.AccesoUsuarios,
             enter = fadeIn(animationSpec = tween(1000)),

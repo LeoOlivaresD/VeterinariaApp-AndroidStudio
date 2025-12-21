@@ -347,7 +347,7 @@ fun ResumenScreen(
                                     }
                                 }
 
-                                // NUEVO: Botón Compartir (Intent Implícito)
+                                // Botón Compartir (Intent Implícito)
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 Button(
