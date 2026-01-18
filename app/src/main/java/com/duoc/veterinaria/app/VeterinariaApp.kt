@@ -18,7 +18,7 @@ import com.duoc.veterinaria.viewmodel.AuthViewModel
 import com.duoc.veterinaria.viewmodel.ConsultaViewModel
 import com.duoc.veterinaria.viewmodel.MainViewModel
 import com.duoc.veterinaria.viewmodel.RegistroViewModel
-
+import com.duoc.veterinaria.ui.HomeVeterinariaScreen
 @Composable
 fun VeterinariaApp(onExit: () -> Unit) {
 
@@ -67,8 +67,8 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 }
             )
         }
-
-        // --- WELCOME SCREEN (HOME) ---
+    //PANTALLA ANTIGUA
+        /** --- WELCOME SCREEN (HOME) ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Welcome,
             enter = fadeIn(animationSpec = tween(1000)),
@@ -95,7 +95,25 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 }
             )
         }
-
+**/
+        //PANTALLA NUEVA PARA ACTIVIDAD SEMANA 1
+        // --- WELCOME SCREEN (HOME) ---
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.Welcome,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            HomeVeterinariaScreen(
+                totalMascotas = totalMascotas,
+                totalConsultas = totalConsultas,
+                ultimoDueno = ultimoDueno,
+                onNavigateToRegistro = { currentScreen = AppScreen.Registro },
+                onNavigateToHistorial = {
+                    consultaViewModel.cargarRegistros()
+                    currentScreen = AppScreen.Resumen
+                }
+            )
+        }
         // --- REGISTRO SCREEN ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Registro,
