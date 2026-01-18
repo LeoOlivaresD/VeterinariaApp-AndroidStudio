@@ -12,6 +12,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.duoc.veterinaria.data.local.prefs.ClientesPrefs
 import com.duoc.veterinaria.data.local.sqlite.ClientesLogDbHelper
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import kotlinx.coroutines.launch
 
 @Composable
 fun DemostracionPersistenciaScreen() {
@@ -22,6 +28,9 @@ fun DemostracionPersistenciaScreen() {
     var ultimoEmail by remember { mutableStateOf("") }
     var ultimoGuardado by remember { mutableStateOf("") }
     var logsTexto by remember { mutableStateOf("") }
+    var mensajeActualizacion by remember { mutableStateOf("") }
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         ultimoEmail = prefs.getUltimoEmail()
@@ -39,7 +48,7 @@ fun DemostracionPersistenciaScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -155,6 +164,7 @@ fun DemostracionPersistenciaScreen() {
             }
         }
 
+        // Boton actualizar
         Button(
             onClick = {
                 ultimoEmail = prefs.getUltimoEmail()
@@ -166,10 +176,39 @@ fun DemostracionPersistenciaScreen() {
                     "Sin datos"
                 }
                 logsTexto = obtenerLogs(logsHelper)
+                mensajeActualizacion = "Datos actualizados correctamente"
+
+                // Scroll automático hacia abajo
+                coroutineScope.launch {
+                    kotlinx.coroutines.delay(100)
+                    scrollState.animateScrollTo(scrollState.maxValue)
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Actualizar Datos")
+        }
+
+        // Mensaje con animación
+        AnimatedVisibility(
+            visible = mensajeActualizacion.isNotEmpty(),
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Text(
+                        text = mensajeActualizacion,
+                        modifier = Modifier.padding(12.dp),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
         }
     }
 }

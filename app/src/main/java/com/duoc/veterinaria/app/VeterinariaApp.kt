@@ -98,22 +98,37 @@ fun VeterinariaApp(onExit: () -> Unit) {
         }
 **/
         //PANTALLA NUEVA PARA ACTIVIDAD SEMANA 1
-        // --- WELCOME SCREEN (HOME) ---
+// --- WELCOME SCREEN (HOME) ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Welcome,
             enter = fadeIn(animationSpec = tween(1000)),
             exit = fadeOut(animationSpec = tween(1000))
         ) {
-            HomeVeterinariaScreen(
-                totalMascotas = totalMascotas,
-                totalConsultas = totalConsultas,
-                ultimoDueno = ultimoDueno,
-                onNavigateToRegistro = { currentScreen = AppScreen.Registro },
-                onNavigateToHistorial = {
-                    consultaViewModel.cargarRegistros()
-                    currentScreen = AppScreen.Resumen
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Veterinaria Duoc UC",
+                        { dest -> currentScreen = dest },
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
+                    )
                 }
-            )
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    HomeVeterinariaScreen(
+                        totalMascotas = totalMascotas,
+                        totalConsultas = totalConsultas,
+                        ultimoDueno = ultimoDueno,
+                        onNavigateToRegistro = { currentScreen = AppScreen.Registro },
+                        onNavigateToHistorial = {
+                            consultaViewModel.cargarRegistros()
+                            currentScreen = AppScreen.Resumen
+                        }
+                    )
+                }
+            }
         }
         // --- REGISTRO SCREEN ---
         AnimatedVisibility(
