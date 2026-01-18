@@ -8,13 +8,11 @@ package com.duoc.veterinaria.data.repository
  */
 object RepositoryProvider {
 
-    // Instancia única compartida del repositorio de atenciones
     val atencionRepository: AtencionRepository by lazy {
         AtencionRepositoryImpl()
     }
 
-    // Instancia única compartida del repositorio de clientes
-    val clienteRepository: ClienteRepository by lazy {
+    val clienteRepository: ClienteRepository by lazy<ClienteRepository> {
         ClienteRepositoryImpl()
     }
 }

@@ -10,5 +10,7 @@ enum class AppScreen {
     Servicio,
     Provider,
     BroadcastTest,
-    AccesoUsuarios
+    AccesoUsuarios,
+    GestionClientes,
+    DemostracionPersistencia
 }

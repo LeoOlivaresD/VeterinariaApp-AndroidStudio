@@ -6,9 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.duoc.veterinaria.data.model.*
 import com.duoc.veterinaria.data.repository.AtencionRepository
-import com.duoc.veterinaria.data.repository.AtencionRepositoryImpl
 import com.duoc.veterinaria.data.repository.ClienteRepository
-import com.duoc.veterinaria.data.repository.ClienteRepositoryImpl
 import com.duoc.veterinaria.data.repository.RepositoryProvider
 import com.duoc.veterinaria.data.service.VeterinariaService
 import kotlinx.coroutines.launch

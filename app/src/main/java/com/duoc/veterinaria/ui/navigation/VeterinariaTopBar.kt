@@ -53,7 +53,7 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // NUEVO: Mi Información
+                // Mi Información
                 DropdownMenuItem(
                     text = { Text("Mi Información") },
                     onClick = {
@@ -64,7 +64,28 @@ fun VeterinariaTopBar(
                         Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
                     }
                 )
-
+                // NUEVO: Gestión de Clientes
+                DropdownMenuItem(
+                    text = { Text("Gestión de Clientes") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.GestionClientes)
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
+                    }
+                )
+                // Demostración de Persistencia
+                DropdownMenuItem(
+                    text = { Text("Demostración Persistencia") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.DemostracionPersistencia)
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.List, contentDescription = null)
+                    }
+                )
                 Divider()
 
                 // Opción 2: Registrar

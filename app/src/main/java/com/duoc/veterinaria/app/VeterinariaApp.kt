@@ -1,5 +1,5 @@
 package com.duoc.veterinaria.app
-
+import com.duoc.veterinaria.ui.GestionClientesScreen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -19,6 +19,7 @@ import com.duoc.veterinaria.viewmodel.ConsultaViewModel
 import com.duoc.veterinaria.viewmodel.MainViewModel
 import com.duoc.veterinaria.viewmodel.RegistroViewModel
 import com.duoc.veterinaria.ui.HomeVeterinariaScreen
+import com.duoc.veterinaria.ui.DemostracionPersistenciaScreen
 @Composable
 fun VeterinariaApp(onExit: () -> Unit) {
 
@@ -252,6 +253,53 @@ fun VeterinariaApp(onExit: () -> Unit) {
                         currentUser = currentUser,
                         registros = registros
                     )
+                }
+            }
+        }
+
+        // --- GESTION CLIENTES SCREEN ---  // AGREGA AQUI
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.GestionClientes,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Gestión de Clientes",
+                        { dest -> currentScreen = dest },
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
+                    )
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    GestionClientesScreen()
+                }
+            }
+        }
+        // --- DEMOSTRACION PERSISTENCIA SCREEN ---
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.DemostracionPersistencia,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Demostración Persistencia",
+                        { dest -> currentScreen = dest },
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
+                    )
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    DemostracionPersistenciaScreen()
                 }
             }
         }
