@@ -53,7 +53,7 @@ fun VeterinariaApp(onExit: () -> Unit) {
             )
         }
 
-        // --- LOGIN SCREEN ---
+        // --- LOGIN SCREEN  ---
         AnimatedVisibility(
             visible = currentScreen == AppScreen.Login,
             enter = fadeIn(animationSpec = tween(1000)),
