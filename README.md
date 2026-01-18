@@ -378,6 +378,5 @@ Todos los derechos reservados
 
 **Leonardo Olivares**  
 Estudiante de Desarrollo de Aplicaciones Móviles  
-Duoc UC - 2024
 
 ---
