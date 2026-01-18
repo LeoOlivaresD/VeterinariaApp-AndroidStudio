@@ -1,40 +1,29 @@
 package com.duoc.veterinaria.data.repository
 
-import com.duoc.veterinaria.data.model.Cliente
+import com.duoc.veterinaria.data.local.dao.ClienteDao
+import com.duoc.veterinaria.data.local.entity.ClienteEntity
+import com.duoc.veterinaria.data.local.prefs.ClientesPrefs
+import com.duoc.veterinaria.data.local.sqlite.ClientesLogDbHelper
+import kotlinx.coroutines.flow.Flow
 
-/**
- * Repositorio para gestionar operaciones relacionadas con Cliente.
- * Actúa como intermediario entre el ViewModel y la fuente de datos.
- *
- * Principio SRP (Single Responsibility):
- * Solo se encarga de operaciones CRUD de Cliente.
- */
-interface ClienteRepository {
-    fun validarCliente(cliente: Cliente): Boolean
-    fun guardarCliente(cliente: Cliente): Result<Cliente>
-}
+//Este repositorio integra las tres tecnologías de persistencia en un solo lugar.
+class ClienteRepository(
+    private val dao: ClienteDao,
+    private val prefs: ClientesPrefs,
+    private val logs: ClientesLogDbHelper
+) {
+    fun clientesFlow(): Flow<List<ClienteEntity>> = dao.getAll()
 
-class ClienteRepositoryImpl : ClienteRepository {
+    suspend fun registrarCliente(nombre: String, email: String, telefono: String): Boolean {
+        val id = dao.insert(ClienteEntity(nombre = nombre, email = email, telefono = telefono))
 
-    // Simulación de almacenamiento local
-    private val clientesRegistrados = mutableListOf<Cliente>()
+        // SQLite: registrar en bitácora
+        logs.addLog("Insert cliente id=$id email=$email")
 
-    override fun validarCliente(cliente: Cliente): Boolean {
-        return cliente.nombre.isNotBlank() &&
-                cliente.email.isNotBlank() &&
-                cliente.telefono.isNotBlank()
-    }
+        // SharedPreferences: guardar último email
+        prefs.setUltimoEmail(email)
+        prefs.setUltimoGuardadoMillis(System.currentTimeMillis())
 
-    override fun guardarCliente(cliente: Cliente): Result<Cliente> {
-        return try {
-            if (!validarCliente(cliente)) {
-                Result.failure(IllegalArgumentException("Datos de cliente inválidos"))
-            } else {
-                clientesRegistrados.add(cliente)
-                Result.success(cliente)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return id > 0
     }
 }

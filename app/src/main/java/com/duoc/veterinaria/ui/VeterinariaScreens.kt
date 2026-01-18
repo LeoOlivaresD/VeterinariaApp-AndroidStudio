@@ -1,5 +1,9 @@
 package com.duoc.veterinaria.ui
 
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.duoc.veterinaria.viewmodel.ClientesViewModel
+import com.duoc.veterinaria.viewmodel.ClientesViewModelFactory
 import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

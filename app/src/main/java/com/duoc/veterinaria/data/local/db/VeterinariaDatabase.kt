@@ -7,7 +7,8 @@ import androidx.room.RoomDatabase
 import com.duoc.veterinaria.data.local.dao.ClienteDao
 import com.duoc.veterinaria.data.local.entity.ClienteEntity
 
-// En esta clase implementamos el patrón Singleton para garantizar una única instancia de la base de datos durante toda la ejecución de la app.
+// En esta clase implementamos el patrón Singleton para garantizar una única instancia
+// de la base de datos durante toda la ejecución de la app.
 @Database(entities = [ClienteEntity::class], version = 1, exportSchema = false)
 abstract class VeterinariaDatabase : RoomDatabase() {
 
