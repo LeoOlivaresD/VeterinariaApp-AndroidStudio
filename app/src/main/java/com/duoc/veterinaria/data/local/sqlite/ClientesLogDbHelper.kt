@@ -5,6 +5,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+//Esta clase usa SQLite tradicional para registrar eventos como
+// inserciones de clientes, con timestamp automático.
+
 class ClientesLogDbHelper(context: Context) :
     SQLiteOpenHelper(context, "veterinaria_logs.db", null, 1) {
 
