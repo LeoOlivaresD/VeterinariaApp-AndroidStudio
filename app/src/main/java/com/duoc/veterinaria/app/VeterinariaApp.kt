@@ -317,6 +317,29 @@ fun VeterinariaApp(onExit: () -> Unit) {
                     DemostracionPersistenciaScreen()
                 }
             }
+            // --- COMPARACION RENDIMIENTO SCREEN ---
+            AnimatedVisibility(
+                visible = currentScreen == AppScreen.ComparacionRendimiento,
+                enter = fadeIn(animationSpec = tween(1000)),
+                exit = fadeOut(animationSpec = tween(1000))
+            ) {
+                Scaffold(
+                    topBar = {
+                        com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                            "Comparación Rendimiento",
+                            { dest -> currentScreen = dest },
+                            {
+                                authViewModel.logout()
+                                currentScreen = AppScreen.Login
+                            }
+                        )
+                    }
+                ) { paddingValues ->
+                    Box(modifier = Modifier.padding(paddingValues)) {
+                        ComparacionRendimientoScreen()
+                    }
+                }
+            }
         }
     }
 }

@@ -12,5 +12,6 @@ enum class AppScreen {
     BroadcastTest,
     AccesoUsuarios,
     GestionClientes,
-    DemostracionPersistencia
+    DemostracionPersistencia,
+    ComparacionRendimiento
 }

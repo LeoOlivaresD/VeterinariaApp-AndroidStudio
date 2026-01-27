@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -84,6 +85,17 @@ fun VeterinariaTopBar(
                     },
                     leadingIcon = {
                         Icon(imageVector = Icons.Default.List, contentDescription = null)
+                    }
+                )
+                // Comparación de Rendimiento
+                DropdownMenuItem(
+                    text = { Text("Comparación Rendimiento") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.ComparacionRendimiento)
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Speed, contentDescription = null)
                     }
                 )
                 Divider()
