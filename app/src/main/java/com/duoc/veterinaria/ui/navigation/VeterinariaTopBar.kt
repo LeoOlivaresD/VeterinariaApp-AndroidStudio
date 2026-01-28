@@ -1,20 +1,15 @@
 package com.duoc.veterinaria.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.duoc.veterinaria.ui.theme.ThemeManager
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +29,21 @@ fun VeterinariaTopBar(
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         actions = {
+            // Botón de tema (modo oscuro/claro)
+            IconButton(onClick = { ThemeManager.toggleTheme() }) {
+                Icon(
+                    imageVector = if (ThemeManager.isDarkMode)
+                        Icons.Default.LightMode
+                    else
+                        Icons.Default.DarkMode,
+                    contentDescription = if (ThemeManager.isDarkMode)
+                        "Cambiar a modo claro"
+                    else
+                        "Cambiar a modo oscuro"
+                )
+            }
+
+            // Botón de menú
             IconButton(onClick = { menuExpanded = true }) {
                 Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Opciones")
             }
@@ -42,7 +52,6 @@ fun VeterinariaTopBar(
                 expanded = menuExpanded,
                 onDismissRequest = { menuExpanded = false }
             ) {
-                // Opción 1: Inicio
                 DropdownMenuItem(
                     text = { Text("Inicio") },
                     onClick = {
@@ -54,7 +63,6 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // Mi Información
                 DropdownMenuItem(
                     text = { Text("Mi Información") },
                     onClick = {
@@ -65,7 +73,7 @@ fun VeterinariaTopBar(
                         Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
                     }
                 )
-                // NUEVO: Gestión de Clientes
+
                 DropdownMenuItem(
                     text = { Text("Gestión de Clientes") },
                     onClick = {
@@ -76,7 +84,7 @@ fun VeterinariaTopBar(
                         Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
                     }
                 )
-                // Demostración de Persistencia
+
                 DropdownMenuItem(
                     text = { Text("Demostración Persistencia") },
                     onClick = {
@@ -87,7 +95,7 @@ fun VeterinariaTopBar(
                         Icon(imageVector = Icons.Default.List, contentDescription = null)
                     }
                 )
-                // Comparación de Rendimiento
+
                 DropdownMenuItem(
                     text = { Text("Comparación Rendimiento") },
                     onClick = {
@@ -95,12 +103,12 @@ fun VeterinariaTopBar(
                         onNavigateTo(AppScreen.ComparacionRendimiento)
                     },
                     leadingIcon = {
-                        Icon(imageVector = Icons.Default.Speed, contentDescription = null)
+                        Icon(imageVector = Icons.Default.Assessment, contentDescription = null)
                     }
                 )
+
                 Divider()
 
-                // Opción 2: Registrar
                 DropdownMenuItem(
                     text = { Text("Registrar Atención") },
                     onClick = {
@@ -112,7 +120,6 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // Opción 3: Historial
                 DropdownMenuItem(
                     text = { Text("Ver Historial") },
                     onClick = {
@@ -126,7 +133,6 @@ fun VeterinariaTopBar(
 
                 Divider()
 
-                // Opción 4: Servicios
                 DropdownMenuItem(
                     text = { Text("Gestión de Servicios") },
                     onClick = {
@@ -138,7 +144,6 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // Opción 5: Content Provider
                 DropdownMenuItem(
                     text = { Text("Content Provider") },
                     onClick = {
@@ -150,7 +155,6 @@ fun VeterinariaTopBar(
                     }
                 )
 
-                // Opción 6: Broadcast Receiver Test
                 DropdownMenuItem(
                     text = { Text("Broadcast Receiver Test") },
                     onClick = {
@@ -164,7 +168,6 @@ fun VeterinariaTopBar(
 
                 Divider()
 
-                // Opción 7: Cerrar Sesión (antes era "Salir")
                 DropdownMenuItem(
                     text = { Text("Cerrar Sesión", color = Color.Red) },
                     onClick = {

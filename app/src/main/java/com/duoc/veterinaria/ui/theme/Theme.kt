@@ -15,31 +15,50 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Definimos el esquema de colores Claros (Light Theme)
+// Esquema de colores CLARO
 private val LightColorScheme = lightColorScheme(
-    primary = AzulRey,              // Botones y Barras en Azul Rey
-    onPrimary = Blanco,             // Texto sobre botones en Blanco
-    primaryContainer = CelesteOscuro, // Contenedores suaves
+    primary = AzulRey,
+    onPrimary = Blanco,
+    primaryContainer = CelesteOscuro,
     onPrimaryContainer = Negro,
-    secondary = AzulRey,            // Acentos
-    background = CelesteClaro,      // Fondo general Celeste
-    surface = Blanco,               // Tarjetas blancas
+    secondary = AzulRey,
+    onSecondary = Blanco,
+    secondaryContainer = CelesteClaro,
+    onSecondaryContainer = Negro,
+    background = CelesteClaro,
     onBackground = Negro,
-    onSurface = Negro
+    surface = Blanco,
+    onSurface = Negro,
+    surfaceVariant = CelesteOscuro,
+    onSurfaceVariant = Negro,
+    error = androidx.compose.ui.graphics.Color(0xFFB00020),
+    onError = Blanco
 )
 
-// (Opcional) Esquema Oscuro
+// Esquema de colores OSCURO
 private val DarkColorScheme = darkColorScheme(
-    primary = AzulRey,
+    primary = CelesteOscuro,
+    onPrimary = Negro,
+    primaryContainer = AzulRey,
+    onPrimaryContainer = Blanco,
     secondary = CelesteOscuro,
-    background = Negro
+    onSecondary = Negro,
+    secondaryContainer = androidx.compose.ui.graphics.Color(0xFF1E1E1E),
+    onSecondaryContainer = Blanco,
+    background = androidx.compose.ui.graphics.Color(0xFF121212),
+    onBackground = Blanco,
+    surface = androidx.compose.ui.graphics.Color(0xFF1E1E1E),
+    onSurface = Blanco,
+    surfaceVariant = androidx.compose.ui.graphics.Color(0xFF2C2C2C),
+    onSurfaceVariant = Blanco,
+    error = androidx.compose.ui.graphics.Color(0xFFCF6679),
+    onError = Negro
 )
 
 @Composable
 fun VeterinariaAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // IMPORTANTE: Ponemos esto en false para forzar nuestros colores azules
-    dynamicColor: Boolean = false,
+    darkTheme: Boolean = ThemeManager.isDarkMode,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -55,9 +74,8 @@ fun VeterinariaAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // Pintamos la barra de estado del color Azul Rey
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
