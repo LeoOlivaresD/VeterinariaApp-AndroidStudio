@@ -81,7 +81,7 @@ fun VeterinariaAppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = scaledTypography(),
         content = content
     )
 }

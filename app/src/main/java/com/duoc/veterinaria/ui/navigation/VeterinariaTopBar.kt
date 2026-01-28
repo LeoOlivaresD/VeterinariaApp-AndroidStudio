@@ -10,6 +10,8 @@ import androidx.compose.ui.unit.sp
 import com.duoc.veterinaria.ui.theme.ThemeManager
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.TextDecrease
+import androidx.compose.material.icons.filled.TextIncrease
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,22 @@ fun VeterinariaTopBar(
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         actions = {
+
+            // Botón disminuir fuente
+            IconButton(onClick = { com.duoc.veterinaria.ui.theme.FontSizeManager.decreaseFontSize() }) {
+                Icon(
+                    imageVector = Icons.Default.TextDecrease,
+                    contentDescription = "Disminuir tamaño de texto"
+                )
+            }
+
+            // Botón aumentar fuente
+            IconButton(onClick = { com.duoc.veterinaria.ui.theme.FontSizeManager.increaseFontSize() }) {
+                Icon(
+                    imageVector = Icons.Default.TextIncrease,
+                    contentDescription = "Aumentar tamaño de texto"
+                )
+            }
             // Botón de tema (modo oscuro/claro)
             IconButton(onClick = { ThemeManager.toggleTheme() }) {
                 Icon(
