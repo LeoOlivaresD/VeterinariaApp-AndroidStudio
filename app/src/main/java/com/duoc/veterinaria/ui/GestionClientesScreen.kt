@@ -8,16 +8,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.duoc.veterinaria.data.model.Cliente
+import com.duoc.veterinaria.utils.AppLogger
 import com.duoc.veterinaria.viewmodel.ClientesViewModel
 import com.duoc.veterinaria.viewmodel.ClientesViewModelFactory
 
@@ -29,15 +32,26 @@ fun GestionClientesScreen(
         )
     )
 ) {
+    val TAG = AppLogger.Tags.UI
+
+    DisposableEffect(Unit) {
+        AppLogger.i(TAG, "GestionClientesScreen compuesta")
+        onDispose {
+            AppLogger.i(TAG, "GestionClientesScreen destruida")
+        }
+    }
+
     val clientesFiltrados by clientesViewModel.clientesFiltrados.observeAsState(emptyList())
     val isLoading by clientesViewModel.isLoading.observeAsState(false)
     val isSearching by clientesViewModel.isSearching.observeAsState(false)
     val searchQuery by clientesViewModel.searchQuery.observeAsState("")
+    val errorState by clientesViewModel.errorState.observeAsState()
 
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf(clientesViewModel.obtenerUltimoEmail()) }
     var telefono by remember { mutableStateOf("") }
     var mensajeUi by remember { mutableStateOf("") }
+    var mensajeTipo by remember { mutableStateOf("info") }
 
     Column(
         modifier = Modifier
@@ -60,41 +74,105 @@ fun GestionClientesScreen(
 
         Divider()
 
+        // Mostrar errores del ViewModel
+        if (errorState != null) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "Error",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Error detectado",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        Text(
+                            text = errorState ?: "",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                    IconButton(onClick = {
+                        clientesViewModel.clearError()
+                        AppLogger.d(TAG, "Error limpiado por el usuario")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Cerrar",
+                            tint = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            }
+        }
+
         // Formulario de registro
         OutlinedTextField(
             value = nombre,
-            onValueChange = { nombre = it },
+            onValueChange = {
+                nombre = it
+                AppLogger.d(TAG, "Campo nombre modificado")
+            },
             label = { Text("Nombre del cliente") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !isLoading,
+            isError = errorState?.contains("nombre", ignoreCase = true) == true
         )
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                AppLogger.d(TAG, "Campo email modificado")
+            },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !isLoading,
+            isError = errorState?.contains("email", ignoreCase = true) == true
         )
 
         OutlinedTextField(
             value = telefono,
-            onValueChange = { telefono = it },
+            onValueChange = {
+                telefono = it
+                AppLogger.d(TAG, "Campo teléfono modificado")
+            },
             label = { Text("Teléfono") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !isLoading,
+            isError = errorState?.contains("teléfono", ignoreCase = true) == true
         )
 
         Button(
             onClick = {
+                AppLogger.i(TAG, "Usuario presionó botón Guardar Cliente")
+
                 if (nombre.isNotEmpty() && email.isNotEmpty() && telefono.isNotEmpty()) {
+                    AppLogger.d(TAG, "Validación de campos OK, iniciando registro")
                     clientesViewModel.registrarCliente(nombre, email, telefono)
                     mensajeUi = "Cliente registrado correctamente en base de datos local"
+                    mensajeTipo = "success"
                     nombre = ""
                     email = ""
                     telefono = ""
                 } else {
+                    AppLogger.w(TAG, "Validación fallida: campos vacíos")
                     mensajeUi = "Por favor completa todos los campos"
+                    mensajeTipo = "warning"
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -114,13 +192,21 @@ fun GestionClientesScreen(
         if (mensajeUi.isNotEmpty()) {
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = when (mensajeTipo) {
+                        "success" -> MaterialTheme.colorScheme.primaryContainer
+                        "warning" -> MaterialTheme.colorScheme.tertiaryContainer
+                        else -> MaterialTheme.colorScheme.secondaryContainer
+                    }
                 )
             ) {
                 Text(
                     text = mensajeUi,
                     modifier = Modifier.padding(12.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = when (mensajeTipo) {
+                        "success" -> MaterialTheme.colorScheme.onPrimaryContainer
+                        "warning" -> MaterialTheme.colorScheme.onTertiaryContainer
+                        else -> MaterialTheme.colorScheme.onSecondaryContainer
+                    }
                 )
             }
         }
@@ -130,7 +216,10 @@ fun GestionClientesScreen(
         // Barra de búsqueda
         OutlinedTextField(
             value = searchQuery,
-            onValueChange = { clientesViewModel.buscarClientes(it) },
+            onValueChange = {
+                AppLogger.d(TAG, "Búsqueda iniciada con query: $it")
+                clientesViewModel.buscarClientes(it)
+            },
             label = { Text("Buscar cliente") },
             placeholder = { Text("Nombre, email o teléfono") },
             leadingIcon = {
@@ -138,7 +227,10 @@ fun GestionClientesScreen(
             },
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { clientesViewModel.limpiarBusqueda() }) {
+                    IconButton(onClick = {
+                        AppLogger.d(TAG, "Búsqueda limpiada por el usuario")
+                        clientesViewModel.limpiarBusqueda()
+                    }) {
                         Icon(Icons.Default.Clear, contentDescription = "Limpiar")
                     }
                 }
