@@ -183,6 +183,16 @@ fun VeterinariaTopBar(
                         Icon(imageVector = Icons.Default.Notifications, contentDescription = null)
                     }
                 )
+                DropdownMenuItem(
+                    text = { Text("Análisis de Rendimiento") },
+                    onClick = {
+                        menuExpanded = false
+                        onNavigateTo(AppScreen.AnalisisRendimiento)
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Assessment, contentDescription = null)
+                    }
+                )
 
                 Divider()
 

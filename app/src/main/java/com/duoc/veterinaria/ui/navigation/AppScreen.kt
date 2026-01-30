@@ -13,5 +13,6 @@ enum class AppScreen {
     AccesoUsuarios,
     GestionClientes,
     DemostracionPersistencia,
-    ComparacionRendimiento
+    ComparacionRendimiento,
+    AnalisisRendimiento
 }
