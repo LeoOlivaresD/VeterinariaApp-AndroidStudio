@@ -342,5 +342,28 @@ fun VeterinariaApp(onExit: () -> Unit) {
                 }
             }
         }
+        // --- ANALISIS RENDIMIENTO SCREEN ---
+        AnimatedVisibility(
+            visible = currentScreen == AppScreen.AnalisisRendimiento,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Scaffold(
+                topBar = {
+                    com.duoc.veterinaria.ui.navigation.VeterinariaTopBar(
+                        "Análisis de Rendimiento",
+                        { dest -> currentScreen = dest },
+                        {
+                            authViewModel.logout()
+                            currentScreen = AppScreen.Login
+                        }
+                    )
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    AnalisisRendimientoScreen()
+                }
+            }
+        }
     }
 }
