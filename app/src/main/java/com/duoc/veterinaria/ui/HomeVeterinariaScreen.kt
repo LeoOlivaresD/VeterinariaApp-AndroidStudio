@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -27,6 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.duoc.veterinaria.R
 import kotlinx.coroutines.delay
+
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 
 // Modelo de datos para veterinarios
 data class Veterinario(
@@ -87,14 +92,19 @@ fun HomeVeterinariaScreen(
             .padding(16.dp)
     ) {
 
-        // Imagen con animación
-        Image(
-            painter = painterResource(id = R.drawable.fondo_home),
+        // Imagen con animación usando Coil
+        val context = LocalContext.current
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(R.drawable.fondo_home)
+                .crossfade(true)
+                .build(),
             contentDescription = "Bienvenida Veterinaria",
             modifier = Modifier
                 .alpha(alphaImage)
                 .fillMaxWidth()
-                .height(180.dp)
+                .height(180.dp),
+            contentScale = ContentScale.Fit
         )
 
         Spacer(modifier = Modifier.height(16.dp))
