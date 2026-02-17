@@ -90,4 +90,7 @@ dependencies {
 
     // Lottie para animaciones
     implementation("com.airbnb.android:lottie-compose:6.3.0")
+
+    // LeakCanary - Detección de memory leaks
+        debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
 }
