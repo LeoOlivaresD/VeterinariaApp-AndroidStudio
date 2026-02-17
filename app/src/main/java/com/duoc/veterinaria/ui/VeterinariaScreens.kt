@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.duoc.veterinaria.R
 import com.duoc.veterinaria.data.model.*
 import com.duoc.veterinaria.ui.navigation.AppScreen
@@ -683,10 +685,15 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(
-                painter = painterResource(id = R.drawable.logo2),
+            val context = LocalContext.current
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(R.drawable.logo2)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = "Logo Veterinaria",
-                modifier = Modifier.size(150.dp)
+                modifier = Modifier.size(150.dp),
+                contentScale = ContentScale.Fit
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "Veterinaria Duoc UC", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
