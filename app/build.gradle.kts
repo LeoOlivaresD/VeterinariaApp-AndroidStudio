@@ -92,5 +92,8 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.3.0")
 
     // LeakCanary - Detección de memory leaks
-        debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
+
+    // Coil - Carga de imágenes optimizada para Compose
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }
