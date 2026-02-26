@@ -1,4 +1,4 @@
-# 🐾 Veterinaria App - Sistema de Gestión Veterinaria
+# Veterinaria App - Sistema de Gestión Veterinaria
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://developer.android.com/)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin-blue.svg)](https://kotlinlang.org/)
@@ -64,6 +64,16 @@
 - **Diseño responsive** adaptable a diferentes tamaños de pantalla
 - **Scroll automático** con feedback visual en actualizaciones
 
+### Testing y Calidad
+- **Pruebas Unitarias** (15 tests con JUnit)
+    - Validación de datos (email, teléfono, nombre)
+    - Filtrado de clientes (búsqueda, case-insensitive)
+- **Pruebas de UI** (5 tests con Espresso + Compose UI Testing)
+    - Verificación de componentes (títulos, campos, botones)
+    - Tests de renderizado de pantalla
+- **Cobertura completa** de funcionalidad crítica
+- **Arquitectura de testing** con pirámide balanceada (75% unit, 25% UI)
+
 ---
 
 ## Usuarios de Prueba
@@ -109,6 +119,9 @@ Para recuperar la contraseña:
 | **KSP** | 1.9.20-1.0.14 | Procesamiento de anotaciones |
 | **Kotlin Reflection** | 1.9.20 | Anotaciones runtime |
 | **Android Gradle Plugin** | 8.2.0 | Build system |
+| **JUnit** | 4.13.2 | Testing unitario |
+| **Espresso** | 3.6.1 | Testing de UI |
+| **MockK** | 1.13.12 | Mocking library |
 | **Min SDK** | 21 (Android 5.0) | Compatibilidad mínima |
 | **Target SDK** | 34 (Android 14) | Versión objetivo |
 
@@ -281,10 +294,13 @@ VeterinariaApp/
 │   │
 │   ├── res/
 │   │   ├── drawable/
-│   │   │   ├── logo1.png
-│   │   │   ├── logo2.png
+│   │   │   ├── logo_veterinaria.png
 │   │   │   ├── fondo_home.jpg
 │   │   │   └── ...
+│   │   │
+│   │   ├── mipmap-*/
+│   │   │   ├── ic_launcher.webp
+│   │   │   └── ic_launcher_round.webp
 │   │   │
 │   │   └── values/
 │   │       ├── colors.xml
@@ -293,8 +309,19 @@ VeterinariaApp/
 │   │
 │   └── AndroidManifest.xml
 │
+├── app/src/test/java/com/duoc/veterinaria/
+│   ├── ClienteValidacionTest.kt          # Tests unitarios (9 tests)
+│   ├── ClientesFiltradoTest.kt           # Tests unitarios (6 tests)
+│   └── ExampleUnitTest.kt
+│
+├── app/src/androidTest/java/com/duoc/veterinaria/
+│   ├── GestionClientesUITest.kt          # Tests de UI (5 tests)
+│   └── ExampleInstrumentedTest.kt
+│
 ├── build.gradle.kts
 ├── settings.gradle.kts
+├── INFORME_SEMANA_7.md
+├── INFORME_SEMANA_8.md
 └── README.md
 ```
 
@@ -312,8 +339,8 @@ VeterinariaApp/
 
 1. **Clonar el repositorio**
 ```bash
-git clone https://github.com/tu-usuario/veterinaria-app.git
-cd veterinaria-app
+git clone https://github.com/LeoOlivaresD/VeterinariaApp-AndroidStudio.git
+cd VeterinariaApp-AndroidStudio
 ```
 
 2. **Abrir en Android Studio**
@@ -341,6 +368,105 @@ Seleccionar dispositivo y esperar la instalación
 
 ---
 
+## Ejecución de Tests
+
+### Tests Unitarios (JUnit)
+
+**Desde Android Studio:**
+```
+1. Click derecho en app/src/test → Run 'Tests in com.duoc.veterinaria'
+2. O ejecutar test individual: Click en ▶ junto a cada @Test
+```
+
+**Desde línea de comandos:**
+```bash
+./gradlew test
+```
+
+**Resultado esperado:**
+```
+BUILD SUCCESSFUL
+15 tests completed, 15 passed
+Tiempo: ~25ms
+```
+
+### Tests de UI (Espresso + Compose)
+
+**Prerequisito:** Iniciar emulador o conectar dispositivo físico
+
+**Desde Android Studio:**
+```
+1. Click derecho en app/src/androidTest → Run 'Tests in com.duoc.veterinaria'
+2. O ejecutar test individual: Click en ▶ junto a cada @Test
+```
+
+**Desde línea de comandos:**
+```bash
+./gradlew connectedAndroidTest
+```
+
+**Resultado esperado:**
+```
+BUILD SUCCESSFUL
+5 tests completed, 5 passed
+Tiempo: ~19 segundos
+```
+
+### Ejecutar Todos los Tests
+
+```bash
+./gradlew test connectedAndroidTest
+```
+
+---
+
+## Generación de APK
+
+### APK Debug (Para desarrollo)
+
+**Desde Android Studio:**
+```
+Build → Build Bundle(s) / APK(s) → Build APK(s)
+```
+
+**Ubicación:**
+```
+app/build/outputs/apk/debug/app-debug.apk
+```
+
+### APK Release Firmado (Para distribución)
+
+**Paso 1: Generar Keystore (primera vez)**
+
+```
+Build → Generate Signed Bundle or APK...
+→ APK → Next
+→ Create new...
+→ Completar datos del certificado
+→ OK
+```
+
+**Paso 2: Firmar APK**
+
+```
+→ Seleccionar keystore creado
+→ Ingresar contraseñas
+→ Remember passwords
+→ Next
+→ Seleccionar "release"
+→ Marcar V1, V2, V3 (Signature Versions)
+→ Create
+```
+
+**Ubicación:**
+```
+app/release/app-release.apk
+```
+
+**Importante:** Guardar backup del keystore (.jks) y contraseñas. Sin este archivo no será posible actualizar la app en el futuro.
+
+---
+
 ## Guía de Uso
 
 ### Iniciar Sesión
@@ -356,7 +482,7 @@ Seleccionar dispositivo y esperar la instalación
 4. Usa la nueva contraseña para entrar
 
 ### Navegar en la App
-- **Menú lateral (⋮)**: Acceso a todas las funcionalidades
+- **Menú lateral**: Acceso a todas las funcionalidades
 - **Mi Información**: Ver perfil y estadísticas personales
 - **Gestión de Clientes**: Registrar y ver clientes (persistencia local)
 - **Demostración Persistencia**: Ver las 3 tecnologías funcionando
@@ -369,7 +495,7 @@ Seleccionar dispositivo y esperar la instalación
 ### Gestionar Clientes (Persistencia Local)
 
 #### Registrar un Cliente
-1. Ve al menú (⋮) y selecciona "Gestión de Clientes"
+1. Ve al menú y selecciona "Gestión de Clientes"
 2. Completa los campos:
     - Nombre del cliente
     - Email (se guarda automáticamente para uso futuro)
@@ -385,7 +511,7 @@ Seleccionar dispositivo y esperar la instalación
 4. Los clientes siguen apareciendo en la lista
 
 #### Ver Demostración de las 3 Tecnologías
-1. Ve al menú (⋮) y selecciona "Demostración Persistencia"
+1. Ve al menú y selecciona "Demostración Persistencia"
 2. Observa las 3 secciones:
     - **Room Database**: Almacenamiento estructurado
     - **SharedPreferences**: Último email y timestamp
@@ -400,7 +526,7 @@ Seleccionar dispositivo y esperar la instalación
 **Paso 4:** Medicamento/Vacuna (solo para Urgencia y Vacunación)
 
 ### Cerrar Sesión
-- Desde cualquier pantalla: Menú (⋮) → "Cerrar Sesión"
+- Desde cualquier pantalla: Menú → "Cerrar Sesión"
 - Volverás automáticamente al Login
 - Los datos locales persisten después de cerrar sesión
 
@@ -505,13 +631,57 @@ Splash (2s) → Login → Home (autenticado)
 
 ---
 
-## Licencia
+## Arquitectura de Testing
 
-Este proyecto fue desarrollado con fines educativos para **Duoc UC**.
+### Pirámide de Testing Implementada
+
 ```
-Copyright © 2026 Duoc UC
-Todos los derechos reservados
+         /\
+        /  \
+       / UI \          5 tests (25%)
+      /______\         Espresso + Compose UI Testing
+     /        \
+    /  Integr. \      0 tests (fuera de scope)
+   /____________\
+  /              \
+ /   Unit Tests   \   15 tests (75%)
+/_____ JUnit ______\  Validación + Filtrado
 ```
+
+**Distribución:**
+- 75% Unit Tests (ejecución rápida, sin emulador)
+- 25% UI Tests (verificación de interfaz)
+- 0% Integration Tests (no requerido en entregas actuales)
+
+### Cobertura de Testing
+
+**Funcionalidades Cubiertas:**
+- Validación de datos de entrada (email, teléfono, nombre)
+- Sistema de búsqueda y filtrado de clientes
+- Renderizado de componentes UI críticos
+- Presencia de elementos en pantalla
+
+**Tests Unitarios (15 tests):**
+- ClienteValidacionTest.kt (9 tests)
+    - Validación de email (3 tests)
+    - Validación de teléfono (3 tests)
+    - Validación de nombre (3 tests)
+- ClientesFiltradoTest.kt (6 tests)
+    - Filtrado por query vacío, nombre, email, teléfono
+    - Case-insensitive search
+    - Query sin resultados
+
+**Tests de UI (5 tests):**
+- GestionClientesUITest.kt (5 tests)
+    - Verificación de título de pantalla
+    - Presencia de campos de entrada
+    - Existencia de botones
+    - Verificación de sección de búsqueda
+    - Verificación de lista de clientes
+
+---
+
+## Licencia
 
 ---
 
